@@ -122,50 +122,25 @@ add_library(agentlib
   src/Planners/ParallelETUCT.cc
   src/Planners/PO_ETUCT.cc
   src/Planners/MBS.cc
-  src/newmat/newmat1.cc
-  src/newmat/newmat2.cc
-  src/newmat/newmat3.cc
-  src/newmat/newmat4.cc
-  src/newmat/newmat5.cc
-  src/newmat/newmat6.cc
-  src/newmat/newmat7.cc
-  src/newmat/newmat8.cc
-  src/newmat/newmatex.cc
-  src/newmat/bandmat.cc
-  src/newmat/submat.cc
-  src/newmat/myexcept.cc
-  src/newmat/cholesky.cc
-  src/newmat/evalue.cc
-  src/newmat/fft.cc
-  src/newmat/hholder.cc
-  src/newmat/jacobi.cc
-  src/newmat/newfft.cc
-  src/newmat/sort.cc
-  src/newmat/svd.cc
-  src/newmat/newmatrm.cc
-  src/newmat/newmat9.cc
 )
 
 ## Declare a cpp executable
-# add_executable(rgbd_tools_node src/rgbd_tools_node.cpp)
-
 add_executable(agent src/agent.cpp)
-target_link_libraries(agent agentlib ${catkin_LIBRARIES})
-
-#add_executable(image_converter src/image_converter.cpp)
-#target_link_libraries(image_converter ${catkin_LIBRARIES})
-
-#add_executable(simplecanny src/simplecanny.cpp)
-#target_link_libraries(simplecanny ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(rgbd_tools_node rgbd_tools_generate_messages_cpp)
+add_dependencies(agent agentlib)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(rgbd_tools_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(agentlib
+    ${catkin_LIBRARIES}
+    newmat
+)
+
+target_link_libraries(agent
+    ${catkin_LIBRARIES}
+    agentlib
+)
 
 #############
 ## Install ##

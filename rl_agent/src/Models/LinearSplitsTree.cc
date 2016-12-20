@@ -6,7 +6,7 @@
 
 #define WANT_MATH                    // include.h will get math fns
                                      // newmatap.h will get include.h
-#include "../newmat/newmatap.h"      // need matrix applications
+#include <newmat/newmatap.h>         // need matrix applications
 #ifdef use_namespace
 using namespace NEWMAT;              // access NEWMAT namespace
 #endif
