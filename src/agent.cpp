@@ -1,10 +1,10 @@
 #include <ros/ros.h>
 
-#include <rl_msgs/RLStateReward.h>
-#include <rl_msgs/RLEnvDescription.h>
-#include <rl_msgs/RLAction.h>
-#include <rl_msgs/RLExperimentInfo.h>
-#include <rl_msgs/RLEnvSeedExperience.h>
+#include <rl_texplore/RLStateReward.h>
+#include <rl_texplore/RLEnvDescription.h>
+#include <rl_texplore/RLAction.h>
+#include <rl_texplore/RLExperimentInfo.h>
+#include <rl_texplore/RLEnvSeedExperience.h>
 
 #include <ros/callback_queue.h>
 
@@ -35,7 +35,7 @@ int seed = 1;
 Agent* agent = NULL;
 bool PRINTS = true;
 
-rl_msgs::RLExperimentInfo info;
+rl_texplore::RLExperimentInfo info;
 char* agentType;
 
 // default parameters
@@ -94,14 +94,14 @@ void displayHelp(){
 }
 
 /** Process the state/reward message from the environment */
-void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
+void processState(const rl_texplore::RLStateReward::ConstPtr &stateIn){
 
   if (agent == NULL){
     cout << "no agent yet" << endl;
     return;
   }
 
-  rl_msgs::RLAction a;
+  rl_texplore::RLAction a;
 
   // first action
   if (firstAction){
@@ -133,7 +133,7 @@ void processState(const rl_msgs::RLStateReward::ConstPtr &stateIn){
 
 
 /** Process seeds for initializing model */
-void processSeed(const rl_msgs::RLEnvSeedExperience::ConstPtr &seedIn){
+void processSeed(const rl_texplore::RLEnvSeedExperience::ConstPtr &seedIn){
 
   if (agent == NULL){
     cout << "no agent yet" << endl;
@@ -154,7 +154,7 @@ void processSeed(const rl_msgs::RLEnvSeedExperience::ConstPtr &seedIn){
 }
 
 /** Process the env description message from the environment */
-void processEnvDescription(const rl_msgs::RLEnvDescription::ConstPtr &envIn){
+void processEnvDescription(const rl_texplore::RLEnvDescription::ConstPtr &envIn){
 
   // initialize the agent based on some info from the environment descriptor
   Random rng(seed+1);
@@ -658,8 +658,8 @@ int main(int argc, char *argv[])
   int qDepth = 1;
 
   // Set up Publishers
-  out_rl_action = node.advertise<rl_msgs::RLAction>("rl_agent/rl_action",qDepth, false);
-  out_exp_info = node.advertise<rl_msgs::RLExperimentInfo>("rl_agent/rl_experiment_info",qDepth, false);
+  out_rl_action = node.advertise<rl_texplore::RLAction>("rl_agent/rl_action",qDepth, false);
+  out_exp_info = node.advertise<rl_texplore::RLExperimentInfo>("rl_agent/rl_experiment_info",qDepth, false);
 
   // Set up subscribers
   ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);

@@ -1,11 +1,11 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
 
-#include <rl_msgs/RLStateReward.h>
-#include <rl_msgs/RLEnvDescription.h>
-#include <rl_msgs/RLAction.h>
-#include <rl_msgs/RLExperimentInfo.h>
-#include <rl_msgs/RLEnvSeedExperience.h>
+#include <rl_texplore/RLStateReward.h>
+#include <rl_texplore/RLEnvDescription.h>
+#include <rl_texplore/RLAction.h>
+#include <rl_texplore/RLExperimentInfo.h>
+#include <rl_texplore/RLEnvSeedExperience.h>
 
 #include <ros/callback_queue.h>
 #include <tf/transform_broadcaster.h>
@@ -67,9 +67,9 @@ void displayHelp(){
 
 
 /** process action from the agent */
-void processAction(const rl_msgs::RLAction::ConstPtr &actionIn){
+void processAction(const rl_texplore::RLAction::ConstPtr &actionIn){
 
-  rl_msgs::RLStateReward sr;
+  rl_texplore::RLStateReward sr;
 
   // process action from the agent, affecting the environment
   sr.reward = e->apply(actionIn->action);
@@ -85,13 +85,13 @@ void processAction(const rl_msgs::RLAction::ConstPtr &actionIn){
 
 /** Process end-of-episode reward info. 
     Mostly to start new episode. */
-void processEpisodeInfo(const rl_msgs::RLExperimentInfo::ConstPtr &infoIn){
+void processEpisodeInfo(const rl_texplore::RLExperimentInfo::ConstPtr &infoIn){
   // start new episode if terminal
   if (PRINTS) cout << "Episode " << infoIn->episode_number << " terminated with reward: " << infoIn->episode_reward << ", start new episode " << endl;
 
   e->reset();
 
-  rl_msgs::RLStateReward sr;
+  rl_texplore::RLStateReward sr;
   sr.reward = 0;
   sr.state = e->sensation();
   sr.terminal = false;
@@ -104,7 +104,7 @@ void initEnvironment(){
 
   // init the environment
   e = NULL;
-  rl_msgs::RLEnvDescription desc;
+  rl_texplore::RLEnvDescription desc;
   
 
   if (strcmp(envType, "cartpole") == 0){
@@ -210,7 +210,7 @@ void initEnvironment(){
   // send experiences
   std::vector<experience> seeds = e->getSeedings();
   for (unsigned i = 0; i < seeds.size(); i++){
-    rl_msgs::RLEnvSeedExperience seed;
+    rl_texplore::RLEnvSeedExperience seed;
     seed.from_state = seeds[i].s;
     seed.to_state   = seeds[i].next;
     seed.action     = seeds[i].act;
@@ -220,7 +220,7 @@ void initEnvironment(){
   }
 
   // now send first state message
-  rl_msgs::RLStateReward sr;
+  rl_texplore::RLStateReward sr;
   sr.terminal = false;
   sr.reward = 0;
   sr.state = e->sensation();
@@ -398,9 +398,9 @@ int main(int argc, char *argv[])
   tf::Transform transform;
 
   // Set up Publishers
-  out_env_desc = node.advertise<rl_msgs::RLEnvDescription>("rl_env/rl_env_description",qDepth,true);
-  out_env_sr = node.advertise<rl_msgs::RLStateReward>("rl_env/rl_state_reward",qDepth,false);
-  out_seed = node.advertise<rl_msgs::RLEnvSeedExperience>("rl_env/rl_seed",20,false);
+  out_env_desc = node.advertise<rl_texplore::RLEnvDescription>("rl_env/rl_env_description",qDepth,true);
+  out_env_sr = node.advertise<rl_texplore::RLStateReward>("rl_env/rl_state_reward",qDepth,false);
+  out_seed = node.advertise<rl_texplore::RLEnvSeedExperience>("rl_env/rl_seed",20,false);
 
   // Set up subscribers
   ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);
