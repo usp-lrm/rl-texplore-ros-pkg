@@ -148,7 +148,7 @@ add_executable(agent src/agent.cpp)
 
 add_executable(env src/env.cpp)
 
-add_executable(experiment src/rl.cc)
+add_executable(experiment src/experiment.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
