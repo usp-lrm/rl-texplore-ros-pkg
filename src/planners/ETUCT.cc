@@ -6,7 +6,7 @@
     \author Todd Hester
 */
 
-#include "ETUCT.hh"
+#include "planners/ETUCT.hh"
 #include <algorithm>
 
 #include <sys/time.h>

@@ -119,14 +119,14 @@ add_library(agentlib
   src/models/ExplorationModel.cc
   src/models/RMaxModel.cc
   src/models/SepPlanExplore.cc
-  src/Planners/ValueIteration.cc
-  src/Planners/PolicyIteration.cc
-  src/Planners/PrioritizedSweeping.cc
-  src/Planners/ETUCT.cc
-  src/Planners/PO_ParallelETUCT.cc
-  src/Planners/ParallelETUCT.cc
-  src/Planners/PO_ETUCT.cc
-  src/Planners/MBS.cc
+  src/planners/ValueIteration.cc
+  src/planners/PolicyIteration.cc
+  src/planners/PrioritizedSweeping.cc
+  src/planners/ETUCT.cc
+  src/planners/PO_ParallelETUCT.cc
+  src/planners/ParallelETUCT.cc
+  src/planners/PO_ETUCT.cc
+  src/planners/MBS.cc
 )
 
 add_library(envlib

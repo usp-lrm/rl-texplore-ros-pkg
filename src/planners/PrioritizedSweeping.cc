@@ -1,4 +1,4 @@
-#include "PrioritizedSweeping.hh"
+#include "planners/PrioritizedSweeping.hh"
 #include <algorithm>
 
 //#include <time.h>

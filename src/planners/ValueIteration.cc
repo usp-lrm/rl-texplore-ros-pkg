@@ -3,7 +3,7 @@
     \author Todd Hester
 */
 
-#include "ValueIteration.hh"
+#include "planners/ValueIteration.hh"
 #include <algorithm>
 
 #include <sys/time.h>

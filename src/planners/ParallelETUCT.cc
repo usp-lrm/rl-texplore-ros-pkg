@@ -8,7 +8,7 @@
     \author Todd Hester
 */
 
-#include "ParallelETUCT.hh"
+#include "planners/ParallelETUCT.hh"
 #include <algorithm>
 
 #include <sys/time.h>

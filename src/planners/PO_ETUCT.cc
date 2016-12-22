@@ -7,7 +7,7 @@
     \author Todd Hester
 */
 
-#include "PO_ETUCT.hh"
+#include "planners/PO_ETUCT.hh"
 #include <algorithm>
 
 #include <sys/time.h>

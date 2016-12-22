@@ -9,14 +9,14 @@
 #include <sys/time.h>
 
 // planners
-#include "../Planners/ValueIteration.hh"
-#include "../Planners/PolicyIteration.hh"
-#include "../Planners/PrioritizedSweeping.hh"
-#include "../Planners/ETUCT.hh"
-#include "../Planners/ParallelETUCT.hh"
-#include "../Planners/PO_ETUCT.hh"
-#include "../Planners/PO_ParallelETUCT.hh"
-#include "../Planners/MBS.hh"
+#include "planners/ValueIteration.hh"
+#include "planners/PolicyIteration.hh"
+#include "planners/PrioritizedSweeping.hh"
+#include "planners/ETUCT.hh"
+#include "planners/ParallelETUCT.hh"
+#include "planners/PO_ETUCT.hh"
+#include "planners/PO_ParallelETUCT.hh"
+#include "planners/MBS.hh"
 
 // models
 #include "models/RMaxModel.hh"
