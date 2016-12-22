@@ -1,8 +1,8 @@
 #ifndef _MBS_HH_
 #define _MBS_HH_
 
-#include <rl_common/Random.h>
-#include <rl_common/core.hh>
+#include <common/Random.h>
+#include <common/core.hh>
 #include "ValueIteration.hh"
 
 #include <set>

@@ -8,8 +8,8 @@
 #define _TWOROOMS_H_
 
 #include <set>
-#include <rl_common/Random.h>
-#include <rl_common/core.hh>
+#include <common/Random.h>
+#include <common/core.hh>
 #include "gridworld.hh"
 
 #include <deque>

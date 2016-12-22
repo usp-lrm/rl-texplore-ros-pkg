@@ -8,9 +8,9 @@
 
 #include <ros/callback_queue.h>
 
-#include <rl_common/core.hh>
-#include <rl_common/Random.h>
-#include <rl_common/ExperienceFile.hh>
+#include <common/core.hh>
+#include <common/Random.h>
+#include <common/ExperienceFile.hh>
 
 #include <agents/DiscretizationAgent.hh>
 #include <agents/QLearner.hh>

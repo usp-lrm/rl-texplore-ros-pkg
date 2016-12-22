@@ -2,8 +2,8 @@
     \author Todd Hester
 */
 
-#include <rl_common/Random.h>
-#include <rl_common/core.hh>
+#include <common/Random.h>
+#include <common/core.hh>
 
 #include <stdio.h>
 #include <string.h>

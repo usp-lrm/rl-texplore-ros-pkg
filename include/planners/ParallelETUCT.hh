@@ -11,9 +11,9 @@
 #ifndef _ParallelETUCT_HH_
 #define _ParallelETUCT_HH_
 
-#include <rl_common/Random.h>
-#include <rl_common/core.hh>
-#include <rl_common/ExperienceFile.hh>
+#include <common/Random.h>
+#include <common/core.hh>
+#include <common/ExperienceFile.hh>
 
 #include "models/FactoredModel.hh"
 #include "models/C45Tree.hh"

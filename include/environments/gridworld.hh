@@ -1,7 +1,7 @@
 #ifndef _GRIDWORLD_H_
 #define _GRIDWORLD_H_
 
-#include <rl_common/Random.h>
+#include <common/Random.h>
 
 #include <iostream>
 #include <vector>

@@ -1,8 +1,8 @@
 #ifndef _POLICYITERATION_HH_
 #define _POLICYITERATION_HH_
 
-#include <rl_common/Random.h>
-#include <rl_common/core.hh>
+#include <common/Random.h>
+#include <common/core.hh>
 
 #include <set>
 #include <vector>

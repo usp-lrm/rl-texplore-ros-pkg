@@ -7,8 +7,8 @@
 #define _CARTPOLE_H_
 
 #include <set>
-#include <rl_common/Random.h>
-#include <rl_common/core.hh>
+#include <common/Random.h>
+#include <common/core.hh>
 
 /** This class defines the Cart-Pole balancing domain. */
 class CartPole: public Environment {

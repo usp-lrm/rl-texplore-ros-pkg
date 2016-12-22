@@ -14,8 +14,8 @@
 #include "models/MultipleClassifiers.hh"
 #include "models/SepPlanExplore.hh"
 
-#include <rl_common/Random.h>
-#include <rl_common/core.hh>
+#include <common/Random.h>
+#include <common/core.hh>
 #include <vector>
 
 
