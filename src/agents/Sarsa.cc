@@ -1,22 +1,24 @@
-#include <rl_agent/QLearner.hh>
+#include <agents/Sarsa.hh>
 #include <algorithm>
 
-QLearner::QLearner(int numactions, float gamma,
-                   float initialvalue, float alpha, float ep,
-                   Random rng):
+Sarsa::Sarsa(int numactions, float gamma,
+             float initialvalue, float alpha, float ep, float lambda,
+             Random rng):
   numactions(numactions), gamma(gamma),
   initialvalue(initialvalue), alpha(alpha),
-  rng(rng), currentq(NULL)
+  epsilon(ep), lambda(lambda),
+  rng(rng)
 {
 
-  epsilon = ep;
+  currentq = NULL;
   ACTDEBUG = false; //true; //false;
+  ELIGDEBUG = false;
 
 }
 
-QLearner::~QLearner() {}
+Sarsa::~Sarsa() {}
 
-int QLearner::first_action(const std::vector<float> &s) {
+int Sarsa::first_action(const std::vector<float> &s) {
 
   if (ACTDEBUG){
     cout << "First - in state: ";
@@ -24,8 +26,19 @@ int QLearner::first_action(const std::vector<float> &s) {
     cout << endl;
   }
 
+  // clear all eligibility traces
+  for (std::map<state_t, std::vector<float> >::iterator i = eligibility.begin();
+       i != eligibility.end(); i++){
+
+    std::vector<float> & elig_s = (*i).second;
+    for (int j = 0; j < numactions; j++){
+      elig_s[j] = 0.0;
+    }
+  }
+
   // Get action values
-  std::vector<float> &Q_s = Q[canonicalize(s)];
+  state_t si = canonicalize(s);
+  std::vector<float> &Q_s = Q[si];
 
   // Choose an action
   const std::vector<float>::iterator a =
@@ -33,14 +46,15 @@ int QLearner::first_action(const std::vector<float> &s) {
     ? Q_s.begin() + rng.uniformDiscrete(0, numactions - 1) // Choose randomly
     : random_max_element(Q_s.begin(), Q_s.end()); // Choose maximum
 
-  // Store location to update value later
-  currentq = &*a;
+  // set eligiblity to 1
+  std::vector<float> &elig_s = eligibility[si];
+  elig_s[a-Q_s.begin()] = 1.0;
 
   if (ACTDEBUG){
     cout << " act: " << (a-Q_s.begin()) << " val: " << *a << endl;
     for (int iAct = 0; iAct < numactions; iAct++){
-      cout << " Action: " << iAct
-           << " val: " << Q_s[iAct] << endl;
+      cout << " Action: " << iAct 
+	   << " val: " << Q_s[iAct] << endl;
     }
     cout << "Took action " << (a-Q_s.begin()) << " from state ";
     printState(s);
@@ -50,7 +64,7 @@ int QLearner::first_action(const std::vector<float> &s) {
   return a - Q_s.begin();
 }
 
-int QLearner::next_action(float r, const std::vector<float> &s) {
+int Sarsa::next_action(float r, const std::vector<float> &s) {
 
   if (ACTDEBUG){
     cout << "Next: got reward " << r << " in state: ";
@@ -59,12 +73,10 @@ int QLearner::next_action(float r, const std::vector<float> &s) {
   }
 
   // Get action values
-  std::vector<float> &Q_s = Q[canonicalize(s)];
+  state_t st = canonicalize(s);
+  std::vector<float> &Q_s = Q[st];
   const std::vector<float>::iterator max =
     random_max_element(Q_s.begin(), Q_s.end());
-
-  // Update value of action just executed
-  *currentq += alpha * (r + gamma * (*max) - *currentq);
 
   // Choose an action
   const std::vector<float>::iterator a =
@@ -72,14 +84,33 @@ int QLearner::next_action(float r, const std::vector<float> &s) {
     ? Q_s.begin() + rng.uniformDiscrete(0, numactions - 1)
     : max;
 
-  // Store location to update value later
-  currentq = &*a;
+  // Update value for all with positive eligibility
+  for (std::map<state_t, std::vector<float> >::iterator i = eligibility.begin();
+       i != eligibility.end(); i++){
+
+    state_t si = (*i).first;
+    std::vector<float> & elig_s = (*i).second;
+    for (int j = 0; j < numactions; j++){
+      if (elig_s[j] > 0.0){
+        if (ELIGDEBUG) {
+          cout << "updating state " << (*((*i).first))[0] << ", " << (*((*i).first))[1] << " act: " << j << " with elig: " << elig_s[j] << endl;
+        }
+        // update
+        Q[si][j] += alpha * elig_s[j] * (r + gamma * (*a) - Q[si][j]);
+        elig_s[j] *= lambda;
+      }
+    }
+        
+  }
+
+  // Set elig to 1
+  eligibility[st][a-Q_s.begin()] = 1.0;
 
   if (ACTDEBUG){
     cout << " act: " << (a-Q_s.begin()) << " val: " << *a << endl;
     for (int iAct = 0; iAct < numactions; iAct++){
-      cout << " Action: " << iAct
-           << " val: " << Q_s[iAct] << endl;
+      cout << " Action: " << iAct 
+	   << " val: " << Q_s[iAct] << endl;
     }
     cout << "Took action " << (a-Q_s.begin()) << " from state ";
     printState(s);
@@ -89,33 +120,51 @@ int QLearner::next_action(float r, const std::vector<float> &s) {
   return a - Q_s.begin();
 }
 
-void QLearner::last_action(float r) {
+void Sarsa::last_action(float r) {
 
   if (ACTDEBUG){
     cout << "Last: got reward " << r << endl;
   }
 
-  *currentq += alpha * (r - *currentq);
-  currentq = NULL;
+  // Update value for all with positive eligibility
+  for (std::map<state_t, std::vector<float> >::iterator i = eligibility.begin();
+       i != eligibility.end(); i++){
+    
+    state_t si = (*i).first;
+    std::vector<float> & elig_s = (*i).second;
+    for (int j = 0; j < numactions; j++){
+      if (elig_s[j] > 0.0){
+        if (ELIGDEBUG){
+          cout << "updating state " << (*((*i).first))[0] << ", " << (*((*i).first))[1] << " act: " << j << " with elig: " << elig_s[j] << endl;
+        }
+        // update
+        Q[si][j] += alpha * elig_s[j] * (r - Q[si][j]);
+        elig_s[j] = 0.0;
+      }
+    }  
+  }
+  
 }
 
-QLearner::state_t QLearner::canonicalize(const std::vector<float> &s) {
+Sarsa::state_t Sarsa::canonicalize(const std::vector<float> &s) {
   const std::pair<std::set<std::vector<float> >::iterator, bool> result =
     statespace.insert(s);
-  state_t retval = &*result.first; // Dereference iterator then get pointer
+  state_t retval = &*result.first; // Dereference iterator then get pointer 
   if (result.second) { // s is new, so initialize Q(s,a) for all a
     std::vector<float> &Q_s = Q[retval];
     Q_s.resize(numactions,initialvalue);
+    std::vector<float> &elig = eligibility[retval];
+    elig.resize(numactions,0);
   }
-  return retval;
+  return retval; 
 }
 
 
 
-std::vector<float>::iterator
-QLearner::random_max_element(
-                             std::vector<float>::iterator start,
-                             std::vector<float>::iterator end) {
+  std::vector<float>::iterator
+Sarsa::random_max_element(
+			     std::vector<float>::iterator start,
+			     std::vector<float>::iterator end) {
 
   std::vector<float>::iterator max =
     std::max_element(start, end);
@@ -133,12 +182,12 @@ QLearner::random_max_element(
 
 
 
-void QLearner::setDebug(bool d){
+void Sarsa::setDebug(bool d){
   ACTDEBUG = d;
 }
 
 
-void QLearner::printState(const std::vector<float> &s){
+void Sarsa::printState(const std::vector<float> &s){
   for (unsigned j = 0; j < s.size(); j++){
     cout << s[j] << ", ";
   }
@@ -146,35 +195,29 @@ void QLearner::printState(const std::vector<float> &s){
 
 
 
-void QLearner::seedExp(std::vector<experience> seeds){
+void Sarsa::seedExp(std::vector<experience> seeds){
 
   // for each seeding experience, update our model
   for (unsigned i = 0; i < seeds.size(); i++){
     experience e = seeds[i];
-
+     
     std::vector<float> &Q_s = Q[canonicalize(e.s)];
-    std::vector<float> &Q_next = Q[canonicalize(e.next)];
-
-    // get max value of next state
-    const std::vector<float>::iterator max =
-      random_max_element(Q_next.begin(), Q_next.end());
-
+    
     // Get q value for action taken
     const std::vector<float>::iterator a = Q_s.begin() + e.act;
-    currentq = &*a;
 
     // Update value of action just executed
-    *currentq += alpha * (e.reward + gamma * (*max) - *currentq);
-
-
+    Q_s[e.act] += alpha * (e.reward + gamma * (*a) - Q_s[e.act]);
+    
+ 
     /*
-      cout << "Seeding with experience " << i << endl;
-      cout << "last: " << (e.s)[0] << ", " << (e.s)[1] << ", "
-      << (e.s)[2] << endl;
-      cout << "act: " << e.act << " r: " << e.reward << endl;
-      cout << "next: " << (e.next)[0] << ", " << (e.next)[1] << ", "
-      << (e.next)[2] << ", " << e.terminal << endl;
-      cout << "Q: " << *currentq << " max: " << *max << endl;
+    cout << "Seeding with experience " << i << endl;
+    cout << "last: " << (e.s)[0] << ", " << (e.s)[1] << ", " 
+	 << (e.s)[2] << endl;
+    cout << "act: " << e.act << " r: " << e.reward << endl;
+    cout << "next: " << (e.next)[0] << ", " << (e.next)[1] << ", " 
+	 << (e.next)[2] << ", " << e.terminal << endl;
+    cout << "Q: " << *currentq << " max: " << *max << endl;
     */
 
   }
@@ -182,7 +225,7 @@ void QLearner::seedExp(std::vector<experience> seeds){
 
 }
 
-void QLearner::logValues(ofstream *of, int xmin, int xmax, int ymin, int ymax){
+void Sarsa::logValues(ofstream *of, int xmin, int xmax, int ymin, int ymax){
   std::vector<float> s;
   s.resize(2, 0.0);
   for (int i = xmin ; i < xmax; i++){
@@ -198,7 +241,7 @@ void QLearner::logValues(ofstream *of, int xmin, int xmax, int ymin, int ymax){
 }
 
 
-float QLearner::getValue(std::vector<float> state){
+float Sarsa::getValue(std::vector<float> state){
 
   state_t s = canonicalize(state);
 
@@ -219,7 +262,7 @@ float QLearner::getValue(std::vector<float> state){
 
     // get state's info
     std::vector<float> &Q_s = Q[s];
-
+      
     for (int j = 0; j < numactions; j++){
       valSum += Q_s[j];
       cnt++;
@@ -232,7 +275,7 @@ float QLearner::getValue(std::vector<float> state){
 }
 
 
-void QLearner::savePolicy(const char* filename){
+void Sarsa::savePolicy(const char* filename){
 
   ofstream policyFile(filename, ios::out | ios::binary | ios::trunc);
 
@@ -260,62 +303,6 @@ void QLearner::savePolicy(const char* filename){
   }
 
   policyFile.close();
-}
-
-
-void QLearner::loadPolicy(const char* filename){
-  bool LOADDEBUG = false;
-
-  ifstream policyFile(filename, ios::in | ios::binary);
-  if (!policyFile.is_open())
-    return;
-
-  // first part, save the vector size
-  int fsize;
-  policyFile.read((char*)&fsize, sizeof(int));
-  if (LOADDEBUG) cout << "Numfeats loaded: " << fsize << endl;
-
-  // save numactions
-  int nact;
-  policyFile.read((char*)&nact, sizeof(int));
-
-  if (nact != numactions){
-    cout << "this policy is not valid loaded nact: " << nact
-         << " was told: " << numactions << endl;
-    exit(-1);
-  }
-
-  // go through all states, loading q values
-  while(!policyFile.eof()){
-    std::vector<float> state;
-    state.resize(fsize, 0.0);
-
-    // load state
-    policyFile.read((char*)&(state[0]), sizeof(float)*fsize);
-    if (LOADDEBUG){
-      cout << "load policy for state: ";
-      printState(state);
-    }
-
-    state_t s = canonicalize(state);
-    std::vector<float> *Q_s = &(Q[s]);
-
-    if (policyFile.eof()) break;
-
-    // load q values
-    policyFile.read((char*)&((*Q_s)[0]), sizeof(float)*numactions);
-
-    if (LOADDEBUG){
-      cout << "Q values: " << endl;
-      for (int iAct = 0; iAct < numactions; iAct++){
-        cout << " Action: " << iAct << " val: " << (*Q_s)[iAct] << endl;
-      }
-    }
-  }
-
-  policyFile.close();
-  cout << "Policy loaded!!!" << endl;
-  //loaded = true;
 }
 
 

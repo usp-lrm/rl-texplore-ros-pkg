@@ -12,12 +12,12 @@
 #include <rl_common/Random.h>
 #include <rl_common/ExperienceFile.hh>
 
-#include <rl_agent/DiscretizationAgent.hh>
-#include <rl_agent/QLearner.hh>
-#include <rl_agent/ModelBasedAgent.hh>
-#include <rl_agent/SavedPolicy.hh>
-#include <rl_agent/Dyna.hh>
-#include <rl_agent/Sarsa.hh>
+#include <agents/DiscretizationAgent.hh>
+#include <agents/QLearner.hh>
+#include <agents/ModelBasedAgent.hh>
+#include <agents/SavedPolicy.hh>
+#include <agents/Dyna.hh>
+#include <agents/Sarsa.hh>
 
 #include "std_msgs/String.h"
 
@@ -658,8 +658,8 @@ int main(int argc, char *argv[])
   int qDepth = 1;
 
   // Set up Publishers
-  out_rl_action = node.advertise<rl_texplore::RLAction>("rl_agent/rl_action",qDepth, false);
-  out_exp_info = node.advertise<rl_texplore::RLExperimentInfo>("rl_agent/rl_experiment_info",qDepth, false);
+  out_rl_action = node.advertise<rl_texplore::RLAction>("agents/rl_action",qDepth, false);
+  out_exp_info = node.advertise<rl_texplore::RLExperimentInfo>("agents/rl_experiment_info",qDepth, false);
 
   // Set up subscribers
   ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);

@@ -104,12 +104,12 @@ include_directories(
 
 ## Declare a cpp library
 add_library(agentlib
-  src/Agent/DiscretizationAgent.cc
-  src/Agent/QLearner.cc
-  src/Agent/ModelBasedAgent.cc
-  src/Agent/SavedPolicy.cc
-  src/Agent/Dyna.cc
-  src/Agent/Sarsa.cc
+  src/agents/DiscretizationAgent.cc
+  src/agents/QLearner.cc
+  src/agents/ModelBasedAgent.cc
+  src/agents/SavedPolicy.cc
+  src/agents/Dyna.cc
+  src/agents/Sarsa.cc
   src/models/FactoredModel.cc
   src/models/M5Tree.cc
   src/models/LinearSplitsTree.cc

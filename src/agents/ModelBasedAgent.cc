@@ -3,7 +3,7 @@
     \author Todd Hester
 */
 
-#include <rl_agent/ModelBasedAgent.hh>
+#include <agents/ModelBasedAgent.hh>
 #include <algorithm>
 
 #include <sys/time.h>

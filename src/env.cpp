@@ -404,8 +404,8 @@ int main(int argc, char *argv[])
 
   // Set up subscribers
   ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);
-  ros::Subscriber rl_action =  node.subscribe("rl_agent/rl_action", qDepth, processAction, noDelay);
-  ros::Subscriber rl_exp_info =  node.subscribe("rl_agent/rl_experiment_info", qDepth, processEpisodeInfo, noDelay);
+  ros::Subscriber rl_action =  node.subscribe("agents/rl_action", qDepth, processAction, noDelay);
+  ros::Subscriber rl_exp_info =  node.subscribe("agents/rl_experiment_info", qDepth, processEpisodeInfo, noDelay);
 
   // publish env description, first state
   // Setup RL World

@@ -27,12 +27,12 @@
 ////////////
 // Agents //
 ////////////
-#include <rl_agent/QLearner.hh>
-#include <rl_agent/ModelBasedAgent.hh>
-#include <rl_agent/DiscretizationAgent.hh>
-#include <rl_agent/SavedPolicy.hh>
-#include <rl_agent/Dyna.hh>
-#include <rl_agent/Sarsa.hh>
+#include <agents/QLearner.hh>
+#include <agents/ModelBasedAgent.hh>
+#include <agents/DiscretizationAgent.hh>
+#include <agents/SavedPolicy.hh>
+#include <agents/Dyna.hh>
+#include <agents/Sarsa.hh>
 
 
 
