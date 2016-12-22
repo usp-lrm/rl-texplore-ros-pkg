@@ -3,7 +3,7 @@
     \author Todd Hester
 */
 
-#include "MultipleClassifiers.hh"
+#include "models/MultipleClassifiers.hh"
 
 
 

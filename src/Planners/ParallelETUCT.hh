@@ -15,8 +15,8 @@
 #include <rl_common/core.hh>
 #include <rl_common/ExperienceFile.hh>
 
-#include "../Models/FactoredModel.hh"
-#include "../Models/C45Tree.hh"
+#include "models/FactoredModel.hh"
+#include "models/C45Tree.hh"
 
 #include <set>
 #include <vector>

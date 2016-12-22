@@ -3,7 +3,7 @@
     \author Todd Hester
 */
 
-#include "RMaxModel.hh"
+#include "models/RMaxModel.hh"
 
 
 

@@ -7,12 +7,12 @@
 #ifndef _FACTOREDMODEL_HH_
 #define _FACTOREDMODEL_HH_
 
-#include "../Models/C45Tree.hh"
-#include "../Models/M5Tree.hh"
-#include "../Models/LinearSplitsTree.hh"
-#include "../Models/Stump.hh"
-#include "../Models/MultipleClassifiers.hh"
-#include "../Models/SepPlanExplore.hh"
+#include "models/C45Tree.hh"
+#include "models/M5Tree.hh"
+#include "models/LinearSplitsTree.hh"
+#include "models/Stump.hh"
+#include "models/MultipleClassifiers.hh"
+#include "models/SepPlanExplore.hh"
 
 #include <rl_common/Random.h>
 #include <rl_common/core.hh>

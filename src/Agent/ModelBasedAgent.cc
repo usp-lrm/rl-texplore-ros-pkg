@@ -19,9 +19,9 @@
 #include "../Planners/MBS.hh"
 
 // models
-#include "../Models/RMaxModel.hh"
-#include "../Models/FactoredModel.hh"
-#include "../Models/ExplorationModel.hh"
+#include "models/RMaxModel.hh"
+#include "models/FactoredModel.hh"
+#include "models/ExplorationModel.hh"
 
 ModelBasedAgent::ModelBasedAgent(int numactions, float gamma, 
                                  float rmax, float rrange,

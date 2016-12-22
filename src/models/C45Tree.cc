@@ -5,7 +5,7 @@
     \author Todd Hester
 */
 
-#include "C45Tree.hh"
+#include "models/C45Tree.hh"
 
 
 

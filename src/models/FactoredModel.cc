@@ -4,7 +4,7 @@
     \author Todd Hester
 */
 
-#include "FactoredModel.hh"
+#include "models/FactoredModel.hh"
 
 
 FactoredModel::FactoredModel(int id, int numactions, int M, int modelType,

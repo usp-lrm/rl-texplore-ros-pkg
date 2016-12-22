@@ -6,7 +6,7 @@
     \author Todd Hester
 */
 
-#include "ExplorationModel.hh"
+#include "models/ExplorationModel.hh"
 
 
 

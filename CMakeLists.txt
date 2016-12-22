@@ -110,15 +110,15 @@ add_library(agentlib
   src/Agent/SavedPolicy.cc
   src/Agent/Dyna.cc
   src/Agent/Sarsa.cc
-  src/Models/FactoredModel.cc
-  src/Models/M5Tree.cc
-  src/Models/LinearSplitsTree.cc
-  src/Models/C45Tree.cc
-  src/Models/Stump.cc
-  src/Models/MultipleClassifiers.cc
-  src/Models/ExplorationModel.cc
-  src/Models/RMaxModel.cc
-  src/Models/SepPlanExplore.cc
+  src/models/FactoredModel.cc
+  src/models/M5Tree.cc
+  src/models/LinearSplitsTree.cc
+  src/models/C45Tree.cc
+  src/models/Stump.cc
+  src/models/MultipleClassifiers.cc
+  src/models/ExplorationModel.cc
+  src/models/RMaxModel.cc
+  src/models/SepPlanExplore.cc
   src/Planners/ValueIteration.cc
   src/Planners/PolicyIteration.cc
   src/Planners/PrioritizedSweeping.cc

@@ -1,12 +1,12 @@
 #ifndef _SEPPLANEXPLORE_HH_
 #define _SEPPLANEXPLORE_HH_
 
-#include "../Models/C45Tree.hh"
-#include "../Models/M5Tree.hh"
-#include "../Models/LinearSplitsTree.hh"
-#include "../Models/MultipleClassifiers.hh"
+#include "models/C45Tree.hh"
+#include "models/M5Tree.hh"
+#include "models/LinearSplitsTree.hh"
+#include "models/MultipleClassifiers.hh"
 
-#include "../Models/Stump.hh"
+#include "models/Stump.hh"
 
 #include <rl_common/Random.h>
 #include <rl_common/core.hh>

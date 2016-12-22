@@ -13,7 +13,7 @@
 #include <rl_common/Random.h>
 #include <rl_common/core.hh>
 
-#include "../Models/FactoredModel.hh"
+#include "models/FactoredModel.hh"
 
 #include <set>
 #include <vector>
