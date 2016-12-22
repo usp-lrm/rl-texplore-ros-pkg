@@ -4,7 +4,7 @@
     \author Todd Hester
 */
 
-#include <rl_env/MountainCar.hh>
+#include <environments/MountainCar.hh>
 
  
 MountainCar::MountainCar(Random &rand):

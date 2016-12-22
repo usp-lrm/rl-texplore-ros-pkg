@@ -1,4 +1,4 @@
-#include <rl_env/energyrooms.hh>
+#include <environments/energyrooms.hh>
 
 /*
   EnergyRooms::EnergyRooms(Random &rand, const Gridworld *gridworld, bool stochastic):

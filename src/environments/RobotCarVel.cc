@@ -8,7 +8,7 @@
     \author Todd Hester
 */
 
-#include <rl_env/RobotCarVel.hh>
+#include <environments/RobotCarVel.hh>
 
 // normal: true values of each
 RobotCarVel::RobotCarVel(Random &rand, bool randomVel, bool upVel, bool tenToSix, bool lag):

@@ -664,9 +664,9 @@ int main(int argc, char *argv[])
   // Set up subscribers
   ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);
 
-  ros::Subscriber rl_description =  node.subscribe("rl_env/rl_env_description", qDepth, processEnvDescription, noDelay);
-  ros::Subscriber rl_state =  node.subscribe("rl_env/rl_state_reward", qDepth, processState, noDelay);
-  ros::Subscriber rl_seed =  node.subscribe("rl_env/rl_seed", 20, processSeed, noDelay);
+  ros::Subscriber rl_description =  node.subscribe("environments/rl_env_description", qDepth, processEnvDescription, noDelay);
+  ros::Subscriber rl_state =  node.subscribe("environments/rl_state_reward", qDepth, processState, noDelay);
+  ros::Subscriber rl_seed =  node.subscribe("environments/rl_seed", 20, processSeed, noDelay);
 
   ROS_INFO(NODE ": starting main loop");
 

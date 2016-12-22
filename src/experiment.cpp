@@ -12,16 +12,16 @@
 //////////////////
 // Environments //
 //////////////////
-#include <rl_env/RobotCarVel.hh>
-#include <rl_env/fourrooms.hh>
-#include <rl_env/tworooms.hh>
-#include <rl_env/taxi.hh>
-#include <rl_env/FuelRooms.hh>
-#include <rl_env/stocks.hh>
-#include <rl_env/energyrooms.hh>
-#include <rl_env/MountainCar.hh>
-#include <rl_env/CartPole.hh>
-#include <rl_env/LightWorld.hh>
+#include <environments/RobotCarVel.hh>
+#include <environments/fourrooms.hh>
+#include <environments/tworooms.hh>
+#include <environments/taxi.hh>
+#include <environments/FuelRooms.hh>
+#include <environments/stocks.hh>
+#include <environments/energyrooms.hh>
+#include <environments/MountainCar.hh>
+#include <environments/CartPole.hh>
+#include <environments/LightWorld.hh>
 
 
 ////////////

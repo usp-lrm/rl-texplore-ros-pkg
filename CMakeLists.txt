@@ -130,17 +130,17 @@ add_library(agentlib
 )
 
 add_library(envlib
-  src/Env/tworooms.cc
-  src/Env/taxi.cc
-  src/Env/MountainCar.cc
-  src/Env/FuelRooms.cc
-  src/Env/CartPole.cc
-  src/Env/fourrooms.cc
-  src/Env/RobotCarVel.cc
-  src/Env/energyrooms.cc
-  src/Env/gridworld.cc
-  src/Env/stocks.cc
-  src/Env/LightWorld.cc
+  src/environments/tworooms.cc
+  src/environments/taxi.cc
+  src/environments/MountainCar.cc
+  src/environments/FuelRooms.cc
+  src/environments/CartPole.cc
+  src/environments/fourrooms.cc
+  src/environments/RobotCarVel.cc
+  src/environments/energyrooms.cc
+  src/environments/gridworld.cc
+  src/environments/stocks.cc
+  src/environments/LightWorld.cc
 )
 
 ## Declare a cpp executable

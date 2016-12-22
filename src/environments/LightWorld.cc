@@ -4,7 +4,7 @@
    by Konidaris and Barto
 */
 
-#include <rl_env/LightWorld.hh>
+#include <environments/LightWorld.hh>
 
 
 LightWorld::LightWorld(Random &rand, bool stochastic, int nrooms):

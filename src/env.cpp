@@ -13,16 +13,16 @@
 #include <rl_common/core.hh>
 #include <rl_common/Random.h>
 
-#include <rl_env/RobotCarVel.hh>
-#include <rl_env/fourrooms.hh>
-#include <rl_env/tworooms.hh>
-#include <rl_env/taxi.hh>
-#include <rl_env/FuelRooms.hh>
-#include <rl_env/stocks.hh>
-#include <rl_env/energyrooms.hh>
-#include <rl_env/MountainCar.hh>
-#include <rl_env/CartPole.hh>
-#include <rl_env/LightWorld.hh>
+#include <environments/RobotCarVel.hh>
+#include <environments/fourrooms.hh>
+#include <environments/tworooms.hh>
+#include <environments/taxi.hh>
+#include <environments/FuelRooms.hh>
+#include <environments/stocks.hh>
+#include <environments/energyrooms.hh>
+#include <environments/MountainCar.hh>
+#include <environments/CartPole.hh>
+#include <environments/LightWorld.hh>
 
 #include <getopt.h>
 #include <stdlib.h>
@@ -398,9 +398,9 @@ int main(int argc, char *argv[])
   tf::Transform transform;
 
   // Set up Publishers
-  out_env_desc = node.advertise<rl_texplore::RLEnvDescription>("rl_env/rl_env_description",qDepth,true);
-  out_env_sr = node.advertise<rl_texplore::RLStateReward>("rl_env/rl_state_reward",qDepth,false);
-  out_seed = node.advertise<rl_texplore::RLEnvSeedExperience>("rl_env/rl_seed",20,false);
+  out_env_desc = node.advertise<rl_texplore::RLEnvDescription>("environments/rl_env_description",qDepth,true);
+  out_env_sr = node.advertise<rl_texplore::RLStateReward>("environments/rl_state_reward",qDepth,false);
+  out_seed = node.advertise<rl_texplore::RLEnvSeedExperience>("environments/rl_seed",20,false);
 
   // Set up subscribers
   ros::TransportHints noDelay = ros::TransportHints().tcpNoDelay(true);
