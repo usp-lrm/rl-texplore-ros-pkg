@@ -16,7 +16,7 @@ Taxi::DefaultLandmarks::DefaultLandmarks() {
   push_back(value_type(0.,0.));
 }
 
-Taxi::Taxi(Random &rand, const Gridworld *gridworld, bool stochastic):
+Taxi::Taxi(Random &rand, const GridWorld *gridworld, bool stochastic):
   grid(gridworld), landmarks(4), noisy(stochastic), rng(rand),
   s(4),
   ns(s[0]),
@@ -57,7 +57,7 @@ Taxi::Taxi(Random &rand, bool stochastic):
 }
 
 Taxi::Taxi(Random &rand, unsigned width, unsigned height, bool stochastic):
-  grid(new Gridworld(height, width, rand)),
+  grid(new GridWorld(height, width, rand)),
   landmarks(4), noisy(stochastic), rng(rand),
   s(4),
   ns(s[0]),
@@ -157,7 +157,7 @@ int Taxi::getNumActions() {
 }
 
 
-const Gridworld *Taxi::create_default_map() {
+const GridWorld *Taxi::create_default_map() {
   std::vector<std::vector<bool> > nsv(5, std::vector<bool>(4,false));
   std::vector<std::vector<bool> > ewv(5, std::vector<bool>(4,false));
   ewv[0][0] = true;
@@ -166,7 +166,7 @@ const Gridworld *Taxi::create_default_map() {
   ewv[1][2] = true;
   ewv[3][1] = true;
   ewv[4][1] = true;
-  return new Gridworld(5,5,nsv,ewv);
+  return new GridWorld(5,5,nsv,ewv);
 }
 
 Taxi::taxi_action_t Taxi::add_noise(taxi_action_t action) {

@@ -4,7 +4,7 @@
 #include <set>
 #include <common/Random.h>
 #include <common/core.hh>
-#include "gridworld.hh"
+#include "GridWorld.hh"
 
 /*
 inline ostream &operator<<(ostream &out, const room_action_t &a) {
@@ -24,7 +24,7 @@ public:
       \param rand Random number generator to use.
       \param gridworld The map to use.
       \param stochastic Whether to use nondeterministic actions. */
-  EnergyRooms(Random &rand, const Gridworld *gridworld, bool stochastic);
+  EnergyRooms(Random &rand, const GridWorld *gridworld, bool stochastic);
 
   /** Creates a deterministic EnergyRooms domain.
       \param rand Random number generator used solely for random
@@ -54,7 +54,7 @@ public:
   virtual void getMinMaxFeatures(std::vector<float> *minFeat, std::vector<float> *maxFeat);
   virtual void getMinMaxReward(float* minR, float* maxR);
 
-  const Gridworld &gridworld() const { return *grid; }
+  const GridWorld &gridworld() const { return *grid; }
 
   friend std::ostream &operator<<(std::ostream &out, const EnergyRooms &rooms);
 
@@ -65,7 +65,7 @@ protected:
   enum room_action_t {NORTH, SOUTH, EAST, WEST};
 
 private:
-  const Gridworld *const grid;
+  const GridWorld *const grid;
   coord_t goal;
 
   const bool negReward;
@@ -84,7 +84,7 @@ private:
   const bool goalOption;
   const bool fuel;
 
-  const Gridworld *create_default_map();
+  const GridWorld *create_default_map();
 
   /** Corrupts a movement action.
       \param action The intended action

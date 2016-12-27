@@ -11,7 +11,6 @@
 #include <set>
 #include <common/Random.h>
 #include <common/core.hh>
-#include "gridworld.hh"
 
 
 /** This class defines the Fuel World gridworld domain */

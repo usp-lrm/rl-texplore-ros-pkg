@@ -1,7 +1,7 @@
 #include <environments/fourrooms.hh>
 
 /*
-FourRooms::FourRooms(Random &rand, const Gridworld *gridworld, bool stochastic):
+FourRooms::FourRooms(Random &rand, const GridWorld *gridworld, bool stochastic):
   grid(gridworld), goal(coord_t(2.,2.)), noisy(stochastic), rng(rand),
   s(2),
   ns(s[0]),
@@ -121,7 +121,7 @@ FourRooms::FourRooms(Random &rand, bool stochastic):
 
 /*
 FourRooms::FourRooms(Random &rand, unsigned width, unsigned height, bool stochastic):
-  grid(new Gridworld(height, width, rand)),
+  grid(new GridWorld(height, width, rand)),
   goal(coord_t(2.,2.)), 
   noisy(stochastic), rng(rand),
   doorway(NULL), 
@@ -444,7 +444,7 @@ std::ostream &operator<<(std::ostream &out, const FourRooms &rooms) {
   return out;
 }
 
-const Gridworld *FourRooms::create_default_map() {
+const GridWorld *FourRooms::create_default_map() {
   int width = 11;
   int height = 11;
   std::vector<std::vector<bool> > nsv(width, std::vector<bool>(height-1,false));
@@ -488,7 +488,7 @@ const Gridworld *FourRooms::create_default_map() {
   ewv[4][7] = true;
   ewv[4][8] = true;
 
-  return new Gridworld(height, width, nsv, ewv);
+  return new GridWorld(height, width, nsv, ewv);
 }
 
 FourRooms::room_action_t FourRooms::add_noise(room_action_t action) {

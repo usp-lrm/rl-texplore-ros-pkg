@@ -10,7 +10,7 @@
 #include <set>
 #include <common/Random.h>
 #include <common/core.hh>
-#include "gridworld.hh"
+#include "GridWorld.hh"
 
 #include <deque>
 
@@ -51,7 +51,7 @@ protected:
   enum room_action_t {NORTH, SOUTH, EAST, WEST};
 
 private:
-  const Gridworld *const grid;
+  const GridWorld *const grid;
   coord_t goal;
   coord_t goal2;
   std::deque<int> actHistory;
@@ -72,7 +72,7 @@ private:
   float &ew;
 
   /** Create default two room gridworld */
-  const Gridworld *create_default_map();
+  const GridWorld *create_default_map();
 
   /** Corrupts a movement action.
       \param action The intended action

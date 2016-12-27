@@ -7,12 +7,12 @@
 #include <vector>
 
 /** \file
-    Declarations supporting Gridworld */
+    Declarations supporting GridWorld */
 
 /** A representation of a rectangular grid with interior walls that
     allows users easily to determine available directions of travel in
     each cell. */
-class Gridworld {
+class GridWorld {
 public:
   /** Creates a gridworld using the given wall occupancy matrices.
       \param height Height of the gridworld.
@@ -23,12 +23,12 @@ public:
       \param eastwest Whether each interior wall blocking EW movement
                       exists, organized first by [h] rows and then by
                       [w-1] columns. */
-  Gridworld(unsigned height, unsigned width,
+  GridWorld(unsigned height, unsigned width,
 	    const std::vector<std::vector<bool> > &northsouth,
 	    const std::vector<std::vector<bool> > &eastwest);
 
   /** Creates a random gridworld with the desired dimensions.  */
-  Gridworld(unsigned width, unsigned height, Random &rng);
+  GridWorld(unsigned width, unsigned height, Random &rng);
 
   unsigned height() const { return h; }
   unsigned width() const { return w; }
@@ -41,7 +41,7 @@ public:
                  north, 1 is south, 2 is east, 3 is west.  */
   bool wall(unsigned nsCoord, unsigned ewCoord, unsigned dir) const;
 
-  friend std::ostream &operator<<(std::ostream &out, const Gridworld &g);
+  friend std::ostream &operator<<(std::ostream &out, const GridWorld &g);
 
 protected:
   /** Attempts to add a random wall that must not touch any other

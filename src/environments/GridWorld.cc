@@ -1,7 +1,7 @@
-#include <environments/gridworld.hh>
+#include <environments/GridWorld.hh>
 #include <cmath>
 
-std::ostream &operator<<(std::ostream &out, const Gridworld &g) {
+std::ostream &operator<<(std::ostream &out, const GridWorld &g) {
   for (unsigned i = 0; i < g.ns.size(); ++i)
     out << " -";
   out << " \n";
@@ -29,13 +29,13 @@ std::ostream &operator<<(std::ostream &out, const Gridworld &g) {
   return out;
 }
 
-Gridworld::Gridworld(unsigned height, unsigned width, 
+GridWorld::GridWorld(unsigned height, unsigned width, 
 		     const std::vector<std::vector<bool> > &northsouth,
 		     const std::vector<std::vector<bool> > &eastwest):
   h(height), w(width), ns(northsouth), ew(eastwest)
 {}
 
-Gridworld::Gridworld(unsigned height, unsigned width, Random &rng):
+GridWorld::GridWorld(unsigned height, unsigned width, Random &rng):
   h(height), w(width),
   ns(w, std::vector<bool>(h - 1, false)),
   ew(h, std::vector<bool>(w - 1, false))
@@ -45,7 +45,7 @@ Gridworld::Gridworld(unsigned height, unsigned width, Random &rng):
     add_obstacle(rng);
 }
 
-bool Gridworld::wall(unsigned nsCoord, unsigned ewCoord, unsigned dir) const {
+bool GridWorld::wall(unsigned nsCoord, unsigned ewCoord, unsigned dir) const {
   const bool isNS = 0 == dir/2;
   const bool isIncr = 0 == dir%2;
   const std::vector<std::vector<bool> > &walls = isNS ? ns : ew;
@@ -61,7 +61,7 @@ bool Gridworld::wall(unsigned nsCoord, unsigned ewCoord, unsigned dir) const {
   return walls[major][minor];
 }
 
-void Gridworld::add_obstacle(Random &rng) {
+void GridWorld::add_obstacle(Random &rng) {
   bool direction = rng.bernoulli(0.5);
   std::vector<std::vector<bool> > &parallel = direction ? ns : ew;
   std::vector<std::vector<bool> > &perpendicular = direction ? ew : ns;
@@ -79,7 +79,7 @@ void Gridworld::add_obstacle(Random &rng) {
   chooseSegment(first, last, seedj, parallel, rng);
 }
 
-void Gridworld::chooseSegment(unsigned first,
+void GridWorld::chooseSegment(unsigned first,
 			      unsigned last,
 			      unsigned j,
 			      std::vector<std::vector<bool> > &parallel,

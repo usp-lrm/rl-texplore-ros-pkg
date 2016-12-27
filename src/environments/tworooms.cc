@@ -159,7 +159,7 @@ int TwoRooms::getNumActions(){
 }
 
 
-const Gridworld *TwoRooms::create_default_map() {
+const GridWorld *TwoRooms::create_default_map() {
   int width = 11;
   int height = 5;
   std::vector<std::vector<bool> > nsv(width, std::vector<bool>(height-1,false));
@@ -180,7 +180,7 @@ const Gridworld *TwoRooms::create_default_map() {
   // add a doorway
   doorway = coord_t(2, 5);
 
-  return new Gridworld(height, width, nsv, ewv);
+  return new GridWorld(height, width, nsv, ewv);
 }
 
 TwoRooms::room_action_t TwoRooms::add_noise(room_action_t action) {

@@ -138,7 +138,7 @@ add_library(envlib
   src/environments/fourrooms.cc
   src/environments/RobotCarVel.cc
   src/environments/energyrooms.cc
-  src/environments/gridworld.cc
+  src/environments/GridWorld.cc
   src/environments/stocks.cc
   src/environments/LightWorld.cc
 )

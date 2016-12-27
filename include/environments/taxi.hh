@@ -11,7 +11,7 @@
 #include <set>
 #include <common/Random.h>
 #include <common/core.hh>
-#include "gridworld.hh"
+#include "GridWorld.hh"
 
 /** This class defines the Taxi domain. */
 class Taxi: public Environment {
@@ -21,7 +21,7 @@ public:
       \param gridworld The map to use.
       \param stochastic Whether to use nondeterministic actions and
                         fickle passenger. */
-  Taxi(Random &rand, const Gridworld *gridworld, bool stochastic);
+  Taxi(Random &rand, const GridWorld *gridworld, bool stochastic);
 
   /** Creates a deterministic Taxi domain.
       \param rand Random number generator used solely for random
@@ -73,7 +73,7 @@ protected:
   };
 
 private:
-  const Gridworld *const grid;
+  const GridWorld *const grid;
   std::vector<coord_t> landmarks; // not const because of randomize_landmarks
   const bool noisy;
   Random &rng;
@@ -87,7 +87,7 @@ private:
   float &dest;
 
   /** Create the default gridworld */
-  static const Gridworld *create_default_map();
+  static const GridWorld *create_default_map();
 
   static const DefaultLandmarks defaultlandmarks;
 
