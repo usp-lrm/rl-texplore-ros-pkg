@@ -130,7 +130,7 @@ add_library(agentlib
 )
 
 add_library(envlib
-  src/environments/tworooms.cc
+  src/environments/TwoRooms.cc
   src/environments/taxi.cc
   src/environments/MountainCar.cc
   src/environments/FuelRooms.cc

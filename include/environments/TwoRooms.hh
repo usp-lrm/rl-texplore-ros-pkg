@@ -1,4 +1,4 @@
-/** \file tworooms.hh
+/** \file TwoRooms.hh
     Defines a two room gridworld domain, with possible action delays or 
     multiple goals (with partial observability). 
     \author Todd Hester

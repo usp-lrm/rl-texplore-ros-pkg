@@ -4,7 +4,7 @@
     \author Todd Hester
 */
 
-#include <environments/tworooms.hh>
+#include <environments/TwoRooms.hh>
 
 
 TwoRooms::TwoRooms(Random &rand, bool stochastic, bool rewardType, 

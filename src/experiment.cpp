@@ -14,7 +14,7 @@
 //////////////////
 #include <environments/RobotCarVel.hh>
 #include <environments/fourrooms.hh>
-#include <environments/tworooms.hh>
+#include <environments/TwoRooms.hh>
 #include <environments/taxi.hh>
 #include <environments/FuelRooms.hh>
 #include <environments/stocks.hh>
