@@ -73,7 +73,7 @@ void processAction(const rl_texplore::RLAction::ConstPtr &actionIn){
 
   // process action from the agent, affecting the environment
   sr.reward = e->apply(actionIn->action);
-  sr.state = e->sensation();
+  sr.state = e->getSensation();
   sr.terminal = e->terminal();
 
   // publish the state-reward message
@@ -93,7 +93,7 @@ void processEpisodeInfo(const rl_texplore::RLExperimentInfo::ConstPtr &infoIn){
 
   rl_texplore::RLStateReward sr;
   sr.reward = 0;
-  sr.state = e->sensation();
+  sr.state = e->getSensation();
   sr.terminal = false;
   out_env_sr.publish(sr);
 }
@@ -223,7 +223,7 @@ void initEnvironment(){
   rl_texplore::RLStateReward sr;
   sr.terminal = false;
   sr.reward = 0;
-  sr.state = e->sensation();
+  sr.state = e->getSensation();
   out_env_sr.publish(sr);
   
 }

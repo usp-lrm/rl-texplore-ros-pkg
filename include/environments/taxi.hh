@@ -46,7 +46,7 @@ public:
 
   virtual ~Taxi();
 
-  virtual const std::vector<float> &sensation() const;
+  virtual const std::vector<float> &getSensation() const;
   virtual float apply(int action);
 
   virtual bool terminal() const;

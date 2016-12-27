@@ -136,7 +136,7 @@ FourRooms::FourRooms(Random &rand, unsigned width, unsigned height, bool stochas
 
 FourRooms::~FourRooms() { delete grid; }
 
-const std::vector<float> &FourRooms::sensation() const { 
+const std::vector<float> &FourRooms::getSensation() const { 
   //cout << "At state " << s[0] << ", " << s[1] << endl;
 
   return s; 

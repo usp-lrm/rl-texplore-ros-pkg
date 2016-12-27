@@ -28,7 +28,7 @@ TwoRooms::TwoRooms(Random &rand, bool stochastic, bool rewardType,
 
 TwoRooms::~TwoRooms() { delete grid; }
 
-const std::vector<float> &TwoRooms::sensation() const { 
+const std::vector<float> &TwoRooms::getSensation() const { 
   //cout << "At state " << s[0] << ", " << s[1] << endl;
 
   return s; 
@@ -271,11 +271,11 @@ experience TwoRooms::getExp(float s0, float s1, int a){
   ew = s1;
 
   e.act = a;
-  e.s = sensation();
+  e.s = getSensation();
   e.reward = apply(e.act);
 
   e.terminal = terminal();
-  e.next = sensation();
+  e.next = getSensation();
 
   /*
   cout << "Seed from " << e.s[0] << "," << e.s[1] << " a: " << e.act

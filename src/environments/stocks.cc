@@ -37,7 +37,7 @@ Stocks::~Stocks() {
   delete [] rising;
 }
 
-const std::vector<float> &Stocks::sensation() const { return s; }
+const std::vector<float> &Stocks::getSensation() const { return s; }
 
 float Stocks::apply(int action) {
 

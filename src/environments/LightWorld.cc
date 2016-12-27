@@ -61,7 +61,7 @@ LightWorld::LightWorld(Random &rand, bool stochastic, int nrooms):
 LightWorld::~LightWorld() {  }
 
 
-const std::vector<float> &LightWorld::sensation() const {
+const std::vector<float> &LightWorld::getSensation() const {
   if (LWDEBUG) print_map();
   return s;
 }

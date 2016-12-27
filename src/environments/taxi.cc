@@ -71,7 +71,7 @@ Taxi::Taxi(Random &rand, unsigned width, unsigned height, bool stochastic):
 
 Taxi::~Taxi() { delete grid; }
 
-const std::vector<float> &Taxi::sensation() const { return s; }
+const std::vector<float> &Taxi::getSensation() const { return s; }
 
 float Taxi::apply(int action) {
   const taxi_action_t effect =
@@ -273,11 +273,11 @@ experience Taxi::getExp(float s0, float s1, float s2, float s3, int a){
   dest = s3;
 
   e.act = a;
-  e.s = sensation();
+  e.s = getSensation();
   e.reward = apply(e.act);
 
   e.terminal = terminal();
-  e.next = sensation();
+  e.next = getSensation();
 
   return e;
 }

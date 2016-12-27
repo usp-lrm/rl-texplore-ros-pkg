@@ -910,7 +910,7 @@ int main(int argc, char **argv) {
       //////////////////////////////////
       for (unsigned i = 0; i < NUMEPISODES; ++i){
 
-        std::vector<float> es = e->sensation();
+        std::vector<float> es = e->getSensation();
 
         // first step
         if (i == 0){
@@ -954,7 +954,7 @@ int main(int argc, char **argv) {
         int steps = 0;
 
         // first action
-        std::vector<float> es = e->sensation();
+        std::vector<float> es = e->getSensation();
         int a = agent->first_action(es);
         float r = e->apply(a);
 
@@ -965,7 +965,7 @@ int main(int argc, char **argv) {
         while (!e->terminal() && steps < MAXSTEPS) {
 
           // perform an action
-          es = e->sensation();
+          es = e->getSensation();
           a = agent->next_action(r, es);
           r = e->apply(a);
 
@@ -979,7 +979,7 @@ int main(int argc, char **argv) {
         if (e->terminal()){
           agent->last_action(r);
         }else{
-          agent->next_action(r, e->sensation());
+          agent->next_action(r, e->getSensation());
         }
 
         e->reset();

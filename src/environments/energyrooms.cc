@@ -84,7 +84,7 @@ EnergyRooms::EnergyRooms(Random &rand, bool stochastic, bool negReward,
 
 EnergyRooms::~EnergyRooms() { delete grid; }
 
-const std::vector<float> &EnergyRooms::sensation() const {
+const std::vector<float> &EnergyRooms::getSensation() const {
   //cout << "At state " << s[0] << ", " << s[1] << endl;
 
   return s;

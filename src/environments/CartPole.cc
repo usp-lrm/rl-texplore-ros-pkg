@@ -35,7 +35,7 @@ CartPole::CartPole(Random &rand, bool stochastic):
 
 CartPole::~CartPole() { }
 
-const std::vector<float> &CartPole::sensation() const { 
+const std::vector<float> &CartPole::getSensation() const { 
   //cout << "At state " << s[0] << ", " << s[1] << endl;
 
   return s; 
@@ -211,11 +211,11 @@ experience CartPole::getExp(float s0, float s1, float s2, float s3, int a){
   poleVel = s3;
 
   e.act = a;
-  e.s = sensation();
+  e.s = getSensation();
   e.reward = apply(e.act);
 
   e.terminal = terminal();
-  e.next = sensation();
+  e.next = getSensation();
 
   return e;
 }

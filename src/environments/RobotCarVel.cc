@@ -33,7 +33,7 @@ RobotCarVel::RobotCarVel(Random &rand, bool randomVel, bool upVel, bool tenToSix
 
 RobotCarVel::~RobotCarVel() { }
 
-const std::vector<float> &RobotCarVel::sensation() const { 
+const std::vector<float> &RobotCarVel::getSensation() const { 
   return s; 
 }
 
@@ -256,11 +256,11 @@ experience RobotCarVel::getExp(float s0, float s1, float s2, float s3, int a){
   brakePosVel = 0.0;
 
   e.act = a;
-  e.s = sensation();
+  e.s = getSensation();
   e.reward = apply(e.act);
 
   e.terminal = terminal();
-  e.next = sensation();
+  e.next = getSensation();
 
   /*
   cout << "seed from state: ";

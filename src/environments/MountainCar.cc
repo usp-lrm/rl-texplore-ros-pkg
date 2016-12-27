@@ -36,7 +36,7 @@ MountainCar::MountainCar(Random &rand, bool stochastic, bool lin, int delay):
 
 MountainCar::~MountainCar() { }
 
-const std::vector<float> &MountainCar::sensation() const { 
+const std::vector<float> &MountainCar::getSensation() const { 
   //cout << "At state " << s[0] << ", " << s[1] << endl;
 
   return s; 
@@ -189,11 +189,11 @@ experience MountainCar::getExp(float s0, float s1, int a){
   vel = s1;
 
   e.act = a;
-  e.s = sensation();
+  e.s = getSensation();
   e.reward = apply(e.act);
 
   e.terminal = terminal();
-  e.next = sensation();
+  e.next = getSensation();
 
   reset();
 

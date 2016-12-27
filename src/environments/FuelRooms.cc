@@ -41,7 +41,7 @@ FuelRooms::~FuelRooms() {
   delete [] stateVisits;
 }
 
-const std::vector<float> &FuelRooms::sensation() const { 
+const std::vector<float> &FuelRooms::getSensation() const { 
   return s; 
 }
 
@@ -367,11 +367,11 @@ experience FuelRooms::getExp(int s0, int s1, int s2, int a){
   ew = s1;
   energy = s2;
   e.act = a;
-  e.s = sensation();
+  e.s = getSensation();
   e.reward = apply(e.act);
 
   e.terminal = terminal();
-  e.next = sensation();
+  e.next = getSensation();
 
   /*
   cout << "Seed experience from state (" << e.s[0] << ", "
