@@ -9,7 +9,7 @@
 
 TwoRooms::TwoRooms(Random &rand, bool stochastic, bool rewardType, 
                    int actDelay, bool multiGoal):
-  grid(create_default_map()),
+  grid(defaultMap()),
   goal(coord_t(1.,1.)), 
   goal2(coord_t(4.,1.)),
   negReward(rewardType),
@@ -159,7 +159,7 @@ int TwoRooms::getNumActions(){
 }
 
 
-const GridWorld *TwoRooms::create_default_map() {
+const GridWorld *TwoRooms::defaultMap() {
   int width = 11;
   int height = 5;
   std::vector<std::vector<bool> > nsv(width, std::vector<bool>(height-1,false));

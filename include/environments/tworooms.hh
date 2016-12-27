@@ -72,7 +72,7 @@ private:
   float &ew;
 
   /** Create default two room gridworld */
-  const GridWorld *create_default_map();
+  const GridWorld *defaultMap();
 
   /** Corrupts a movement action.
       \param action The intended action

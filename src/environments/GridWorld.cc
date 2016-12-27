@@ -29,21 +29,24 @@ std::ostream &operator<<(std::ostream &out, const GridWorld &g) {
   return out;
 }
 
-GridWorld::GridWorld(unsigned height, unsigned width, 
-		     const std::vector<std::vector<bool> > &northsouth,
-		     const std::vector<std::vector<bool> > &eastwest):
+
+GridWorld::GridWorld(const unsigned height, const unsigned width,
+                     const std::vector<std::vector<bool> > &northsouth,
+                     const std::vector<std::vector<bool> > &eastwest):
   h(height), w(width), ns(northsouth), ew(eastwest)
 {}
 
-GridWorld::GridWorld(unsigned height, unsigned width, Random &rng):
+
+GridWorld::GridWorld(const unsigned height, const unsigned width, Random &rng):
   h(height), w(width),
   ns(w, std::vector<bool>(h - 1, false)),
   ew(h, std::vector<bool>(w - 1, false))
 {
   const unsigned n = static_cast<unsigned>(sqrt(static_cast<float>(w*h)));
   for (unsigned i = 0; i < n; ++i)
-    add_obstacle(rng);
+    addObstacle(rng);
 }
+
 
 bool GridWorld::wall(unsigned nsCoord, unsigned ewCoord, unsigned dir) const {
   const bool isNS = 0 == dir/2;
@@ -61,7 +64,8 @@ bool GridWorld::wall(unsigned nsCoord, unsigned ewCoord, unsigned dir) const {
   return walls[major][minor];
 }
 
-void GridWorld::add_obstacle(Random &rng) {
+
+void GridWorld::addObstacle(Random &rng) {
   bool direction = rng.bernoulli(0.5);
   std::vector<std::vector<bool> > &parallel = direction ? ns : ew;
   std::vector<std::vector<bool> > &perpendicular = direction ? ew : ns;
@@ -79,11 +83,9 @@ void GridWorld::add_obstacle(Random &rng) {
   chooseSegment(first, last, seedj, parallel, rng);
 }
 
-void GridWorld::chooseSegment(unsigned first,
-			      unsigned last,
-			      unsigned j,
-			      std::vector<std::vector<bool> > &parallel,
-			      Random &rng)
+
+void GridWorld::chooseSegment(unsigned first, unsigned last, unsigned j,
+                              std::vector<std::vector<bool> > &parallel, Random &rng)
 {
   if (last <= first)
     return;
@@ -96,4 +98,21 @@ void GridWorld::chooseSegment(unsigned first,
 
   for (unsigned i = 0; i < length; ++i)
     parallel[start + i*dir][j] = true;
+}
+
+bool GridWorld::isClear(const unsigned i, const unsigned j,
+                        const std::vector<std::vector<bool> > &parallel,
+                        const std::vector<std::vector<bool> > &perpendicular) const
+{
+    if (i > parallel.size())
+        return false;
+    if (i < parallel.size() && parallel[i][j])
+        return false;
+    if (i > 0 && parallel[i - 1][j])
+        return false;
+    if (i > 0 && i <= perpendicular[j].size() && perpendicular[j][i - 1])
+        return false;
+    if (i > 0 && i <= perpendicular[j + 1].size() && perpendicular[j + 1][i - 1])
+        return false;
+    return true;
 }

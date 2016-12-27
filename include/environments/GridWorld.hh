@@ -11,7 +11,7 @@
 
 /** A representation of a rectangular grid with interior walls that
     allows users easily to determine available directions of travel in
-    each cell. */
+    each cell. NOTE: There are no walls around the grid. */
 class GridWorld {
 public:
   /** Creates a gridworld using the given wall occupancy matrices.
@@ -23,12 +23,12 @@ public:
       \param eastwest Whether each interior wall blocking EW movement
                       exists, organized first by [h] rows and then by
                       [w-1] columns. */
-  GridWorld(unsigned height, unsigned width,
-	    const std::vector<std::vector<bool> > &northsouth,
-	    const std::vector<std::vector<bool> > &eastwest);
+  GridWorld(const unsigned height, const unsigned width,
+            const std::vector<std::vector<bool> > &northsouth,
+            const std::vector<std::vector<bool> > &eastwest);
 
   /** Creates a random gridworld with the desired dimensions.  */
-  GridWorld(unsigned width, unsigned height, Random &rng);
+  GridWorld(const unsigned height, const unsigned width, Random &rng);
 
   unsigned height() const { return h; }
   unsigned width() const { return w; }
@@ -46,15 +46,15 @@ public:
 protected:
   /** Attempts to add a random wall that must not touch any other
       interior wall. */
-  void add_obstacle(Random &rng);
+  void addObstacle(Random &rng);
 
   /** Given a segment of wall that could be built, builds a subset of
       it of random length.  Always builds from one of the two ends.  */
   void chooseSegment(unsigned first,
-		     unsigned last,
-		     unsigned j,
-		     std::vector<std::vector<bool> > &parallel,
-		     Random &rng);
+                     unsigned last,
+                     unsigned j,
+                     std::vector<std::vector<bool> > &parallel,
+                     Random &rng);
 
 private:
   /** Determines if the "smaller" endpoint of the given line segment
@@ -66,26 +66,9 @@ private:
                       under consiration.
       \param perpendicular Occupancy matrix for walls perpendicular to
                            the wall under consiration.  */
-  bool isClear(unsigned i, unsigned j,
-	       std::vector<std::vector<bool> > &parallel,
-	       std::vector<std::vector<bool> > &perpendicular) const
-  {
-    if (i > parallel.size())
-      return false;
-    if (i < parallel.size() && parallel[i][j])
-      return false;
-    if (i > 0 && parallel[i - 1][j])
-      return false;
-    if (i > 0
-	&& i <= perpendicular[j].size()
-	&& perpendicular[j][i - 1])
-      return false;
-    if (i > 0
-	&& i <= perpendicular[j + 1].size()
-	&& perpendicular[j + 1][i - 1])
-      return false;
-    return true;
-  }
+  bool isClear(const unsigned i, const unsigned j,
+               const std::vector<std::vector<bool> > &parallel,
+               const std::vector<std::vector<bool> > &perpendicular) const;
 
   const unsigned h;
   const unsigned w;
