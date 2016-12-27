@@ -1,0 +1,27 @@
+<package>
+  <name>rl_texplore</name>
+  <version>1.0.0</version>
+  <description>rl_texplore is a package containing reinforcement learning (RL) agents and environments. </description>
+
+  <author>Todd Hester</author>
+  <maintainer email="todd.hester@gmail.com">Todd Hester</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>std_msgs</build_depend>
+
+  <run_depend>message_runtime</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>std_msgs</run_depend>
+
+  <export>
+     <cpp cflags="-I${prefix}/include"
+         lflags="-L${prefix}/lib -Wl,-rpath,${prefix}/lib"/>
+  </export>
+
+</package>
