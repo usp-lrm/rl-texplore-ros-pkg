@@ -121,22 +121,19 @@ float TwoRooms::apply(int action) {
 // return the reward for this move
 float TwoRooms::reward() {
 
-
 //  if ( position == goal2 )
 //    cout << "At goal 2, " << useGoal2 << endl;
 //  if ( position == goal )
 //    cout << "At goal 1, " << !useGoal2 << endl;
-
 
   if (negReward){
     // normally -1 and 0 on goal
     if (terminal())
       return 0;
     else 
-      return -1;
-    
-  }else{
+      return distanceReward();
 
+  }else{
     // or we could do 0 and 1 on goal
     if (terminal())
       return 1;
@@ -145,6 +142,17 @@ float TwoRooms::reward() {
   }
 }
 
+
+// Create a reward that goes form -1 to 0
+// depending on the distance between the position and the goal
+// reward = - d / ( d + 4 )
+const float TwoRooms::distanceReward() const{
+    // Basic analytic geometry
+    float dx = abs(position.x - goal.x);
+    float dy = abs(position.y - goal.y);
+    float distance = sqrt(pow(dx,2) + pow(dy,2));
+    return - distance / (distance + 4);
+}
 
 
 bool TwoRooms::terminal() const {

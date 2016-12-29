@@ -53,6 +53,8 @@ public:
 
   virtual std::vector<experience> getSeedings();
 
+  const float distanceReward() const;
+
 protected:
   enum RoomAction {
     NORTH = 0,
