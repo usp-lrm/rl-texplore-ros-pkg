@@ -145,10 +145,9 @@ add_library(envlib
 
 ## Declare a cpp executable
 add_executable(agent src/agent.cpp)
-
 add_executable(env src/env.cpp)
-
 add_executable(experiment src/experiment.cpp)
+add_executable(gazebo src/gazebo.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -182,6 +181,12 @@ target_link_libraries(experiment
     ${catkin_LIBRARIES}
 )
 
+target_link_libraries(gazebo
+    agentlib
+    envlib
+    ${catkin_LIBRARIES}
+)
+
 
 #############
 ## Install ##
@@ -198,7 +203,7 @@ target_link_libraries(experiment
 # )
 
 ## Mark executables and/or libraries for installation
-install(TARGETS agent agentlib env envlib experiment
+install(TARGETS agent agentlib env envlib experiment gazebo
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
