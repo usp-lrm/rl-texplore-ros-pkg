@@ -15,6 +15,13 @@
 #include <deque>
 
 
+struct Position{
+    Position( unsigned x = 0, unsigned y = 0);
+    unsigned x, y;
+    friend bool operator == (const Position& position_01, const Position& position_02);
+};
+
+
 /** This class defines a two room gridworld domain. It can optionally be stochastic, have action
     delays, or multiple goals (with partial observability). */
 class TwoRooms: public Environment {
@@ -47,16 +54,18 @@ public:
   virtual std::vector<experience> getSeedings();
 
 protected:
-  typedef std::pair<float,float> coord_t;
-  enum room_action_t {NORTH, SOUTH, EAST, WEST};
+  enum RoomAction {
+    NORTH = 0,
+    SOUTH = 1,
+    EAST = 2,
+    WEST = 3
+  };
 
 private:
   const GridWorld *const grid;
-  coord_t goal;
-  coord_t goal2;
+  Position goal, goal2, doorway;
   std::deque<int> actHistory;
   bool useGoal2;
-
   const bool negReward;
   const bool noisy;
   const int actDelay;
@@ -64,12 +73,8 @@ private:
 
   Random &rng;
 
-  coord_t doorway;
-
-  std::vector<float> s;
-
-  float &ns;
-  float &ew;
+  std::vector<float> sensation;
+  Position position;
 
   /** Create default two room gridworld */
   const GridWorld *defaultMap();
@@ -77,7 +82,7 @@ private:
   /** Corrupts a movement action.
       \param action The intended action
       \return The action actually executed */
-  room_action_t add_noise(room_action_t action);
+  RoomAction add_noise(RoomAction action);
 
   /** Randomly assigns the goal to any random 
       position in the world. */

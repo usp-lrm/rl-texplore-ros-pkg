@@ -7,20 +7,26 @@
 #include <environments/TwoRooms.hh>
 
 
-TwoRooms::TwoRooms(Random &rand, bool stochastic, bool rewardType, 
+Position::Position( unsigned x, unsigned y ): x(x), y(y) {}
+
+
+inline bool operator == (const Position& position_01, const Position& position_02){
+    return ((position_01.x == position_02.x) && (position_01.y == position_02.y));
+}
+
+
+TwoRooms::TwoRooms(Random &rand, bool stochastic, bool rewardType,
                    int actDelay, bool multiGoal):
   grid(defaultMap()),
-  goal(coord_t(1.,1.)), 
-  goal2(coord_t(4.,1.)),
+  goal(1,1),
+  goal2(9,1),
   negReward(rewardType),
   noisy(stochastic),
   actDelay(actDelay),
   multiGoal(multiGoal),
   rng(rand),
-  doorway(coord_t(2.,5.)),
-  s(2),
-  ns(s[0]),
-  ew(s[1])
+  doorway(2,5),
+  sensation(2)
 {
   reset();
 }
@@ -28,15 +34,14 @@ TwoRooms::TwoRooms(Random &rand, bool stochastic, bool rewardType,
 
 TwoRooms::~TwoRooms() { delete grid; }
 
-const std::vector<float> &TwoRooms::getSensation() const { 
-  //cout << "At state " << s[0] << ", " << s[1] << endl;
+const std::vector<float> &TwoRooms::getSensation() const {
+  //cout << "At state " << sensation[0] << ", " << sensation[1] << endl;
 
-  return s; 
+  return sensation;
 }
 
 float TwoRooms::apply(int action) {
-
-  //cout << "Taking action " << static_cast<room_action_t>(action) << endl;
+//  cout << "Taking action " << static_cast<RoomAction>(action) << endl;
 
   int actUsed = action;
 
@@ -46,62 +51,82 @@ float TwoRooms::apply(int action) {
     actHistory.pop_front();
   }
 
-  if (actUsed > -1){
+  if (actDelay == 0){
 
-    const room_action_t effect =
-      noisy
-      ? add_noise(static_cast<room_action_t>(actUsed)) 
-      : static_cast<room_action_t>(actUsed);
-    switch(effect) {
-    case NORTH:
-      if (!grid->wall(static_cast<unsigned>(ns),
-                      static_cast<unsigned>(ew),
-                      effect))
-        {
-          ++ns;
+    // TODO
+    // The action should have a equal chance to change to other state every N steps.
+    // const RoomAction effect = noisy
+    //   ? add_noise(static_cast<RoomAction>(actUsed))
+    //   : static_cast<RoomAction>(actUsed);
+
+    const RoomAction effect = static_cast<RoomAction>(actUsed);
+
+    // Move or not the agent
+    if ( !grid->wall(position.y, position.x, effect) )
+    {
+        cout << "\nInitial position = " << position.x << "," << position.y << endl;
+        switch(effect) {
+        case NORTH:
+            cout << "Go north" << endl;
+            ++position.y;
+            break;
+        case SOUTH:
+            cout << "Go south" << endl;
+            --position.y;
+            break;
+        case EAST:
+            cout << "Go east" << endl;
+            ++position.x;
+            break;
+        case WEST:
+            cout << "Go west" << endl;
+            --position.x;
+            break;
+        default:
+            std::cerr << "Undefined action in TwoRooms::apply!!!\n";
+            exit(EXIT_FAILURE);
         }
-      return reward();
-    case SOUTH:
-      if (!grid->wall(static_cast<unsigned>(ns),
-                      static_cast<unsigned>(ew),
-                      effect))
-        {
-          --ns;
+    cout << "Next position = " << position.x << "," << position.y << endl;
+    }else {
+        cout << "\nDont move. Tried to go ";
+        switch( effect ){
+        case NORTH:
+            cout << "north.\n";
+            break;
+        case SOUTH:
+            cout << "south.\n";
+            break;
+        case EAST:
+            cout << "east.\n";
+            break;
+        case WEST:
+            cout << "west.\n";
+            break;
+        default:
+            std::cerr << "Undefined action in TwoRooms::apply!!!\n";
+            exit(EXIT_FAILURE);
         }
-      return reward();
-    case EAST:
-      if (!grid->wall(static_cast<unsigned>(ns),
-                      static_cast<unsigned>(ew),
-                      effect))
-        {
-          ++ew;
-        }
-      return reward();
-    case WEST:
-      if (!grid->wall(static_cast<unsigned>(ns),
-                      static_cast<unsigned>(ew),
-                      effect))
-        {
-          --ew;
-        }
-      return reward();
     }
-
-    std::cerr << "Unreachable point reached in TwoRooms::apply!!!\n";
+    return reward();
   }
-  
-  return 0; 
+
+
+  // Update sensation variable
+  sensation[0] = static_cast<float>(position.y);
+  sensation[1] = static_cast<float>(position.x);
+
+  return 0;
 }
 
 // return the reward for this move
 float TwoRooms::reward() {
 
-  /*
-  if (coord_t(ns,ew) == goal2)
-    cout << "At goal 2, " << useGoal2 << endl;
-  if (coord_t(ns,ew) == goal)
-    cout << "At goal 1, " << !useGoal2 << endl;
-  */
+
+//  if ( position == goal2 )
+//    cout << "At goal 2, " << useGoal2 << endl;
+//  if ( position == goal )
+//    cout << "At goal 1, " << !useGoal2 << endl;
+
 
   if (negReward){
     // normally -1 and 0 on goal
@@ -125,16 +150,16 @@ float TwoRooms::reward() {
 bool TwoRooms::terminal() const {
   // current position equal to goal??
   if (useGoal2)
-    return coord_t(ns,ew) == goal2;
+    return position == goal2;
   else
-    return coord_t(ns,ew) == goal;
+    return position == goal;
 }
 
 
 void TwoRooms::reset() {
   // start randomly in right room
-  ns = rng.uniformDiscrete(0, grid->height() - 1 );
-  ew = rng.uniformDiscrete(6, grid->width() - 1);
+  position.y = rng.uniformDiscrete(0, grid->height() - 1 );
+  position.x = rng.uniformDiscrete(6, grid->width() - 1);
 
   // a history of no_acts
   actHistory.clear();
@@ -178,12 +203,14 @@ const GridWorld *TwoRooms::defaultMap() {
   nsv[5][2] = true;
 
   // add a doorway
-  doorway = coord_t(2, 5);
+  doorway = Position(2, 5);
 
+  // Print grid
+  cout << GridWorld(height, width, nsv, ewv);
   return new GridWorld(height, width, nsv, ewv);
 }
 
-TwoRooms::room_action_t TwoRooms::add_noise(room_action_t action) {
+TwoRooms::RoomAction TwoRooms::add_noise(RoomAction action) {
   switch(action) {
   case NORTH:
   case SOUTH:
@@ -200,15 +227,15 @@ TwoRooms::room_action_t TwoRooms::add_noise(room_action_t action) {
 void TwoRooms::randomize_goal() {
   const unsigned n = grid->height() * grid->width();
   unsigned index = rng.uniformDiscrete(1,n) - 1;
-  goal = coord_t(index / grid->width(), index % grid->width());
+  goal = Position(index / grid->width(), index % grid->width());
 }
 
 
 void TwoRooms::getMinMaxFeatures(std::vector<float> *minFeat,
                                  std::vector<float> *maxFeat){
   
-  minFeat->resize(s.size(), 0.0);
-  maxFeat->resize(s.size(), 10.0);
+  minFeat->resize(sensation.size(), 0.0);
+  maxFeat->resize(sensation.size(), 10.0);
 
   (*maxFeat)[0] = 5.0;
 
@@ -267,8 +294,8 @@ experience TwoRooms::getExp(float s0, float s1, int a){
   e.s.resize(2, 0.0);
   e.next.resize(2, 0.0);
 
-  ns = s0;
-  ew = s1;
+  position.x = s0;
+  position.y = s1;
 
   e.act = a;
   e.s = getSensation();
