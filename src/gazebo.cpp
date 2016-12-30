@@ -5,10 +5,9 @@
 #include <common/Random.h>
 #include <common/core.hh>
 #include <agents/QLearner.hh>
+#include <agents/Sarsa.hh>
 
 #include <ros/ros.h>
-#include <rl_texplore/RLAction.h>
-
 #include <std_msgs/String.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/Float32.h>
@@ -16,18 +15,35 @@
 using namespace std;
 
 
-struct RLVariables{
-    static float reward;
-    static float sensation;
+class RLVechicle{
+    public:
+    RLVechicle( ros::NodeHandle );
+    ~RLVechicle();
+
+    void simulate();
+    void rewardCallback(const std_msgs::Float32::ConstPtr& rewardMsg);
+    void sensationCallback(const std_msgs::Float32::ConstPtr& sensationMsg);
+
+    private:
+    int runSteps( Agent * agent );
+    void resetEnvironment( );
+    vector<experience> getSeedings( );
+    experience getExperience( const unsigned action );
+
+    ros::Publisher actionPublisher;
+    ros::Subscriber rewardSubscriber;
+    ros::Subscriber sensationSubscriber;
+    vector<float> sensation;
+    float reward;
+
+    enum VechicleAction{
+        Backward = 0,
+        Stop = 1,
+        Forward = 2,
+        NumActions = 3
+    };
 };
-float RLVariables::reward = -1;
-float RLVariables::sensation = 0;
 
-void rewardCallback(const std_msgs::Float32::ConstPtr& rewardMsg);
-void sensationCallback(const std_msgs::Float32::ConstPtr& sensationMsg);
-
-int runAlgorithm( Agent * agent, ros::Publisher actionPublisher );
-void resetEnvironment( ros::Publisher actionPublisher );
 
 
 int main(int argc, char **argv){
@@ -35,46 +51,86 @@ int main(int argc, char **argv){
     ros::init(argc, argv, "RLAgent");
     ros::NodeHandle node;
 
+    RLVechicle roverSim( node );
+    roverSim.simulate();
+
+    return 0;
+}
+
+
+RLVechicle::RLVechicle( ros::NodeHandle node ): reward(-1){
+    sensation.resize(1,0);
 
     const unsigned bufferSize = 1;
-    ros::Publisher actionPublisher = node.advertise<std_msgs::Int32>("/rl/action", bufferSize);
-    ros::Subscriber rewardSubscriber = node.subscribe("/rl/reward", bufferSize, rewardCallback);
-    ros::Subscriber sensationSubscriber = node.subscribe("rl/sensation", bufferSize, sensationCallback);
+    actionPublisher = node.advertise<std_msgs::Int32>("/rl/action", bufferSize);
+    rewardSubscriber = node.subscribe("/rl/reward", bufferSize, &RLVechicle::rewardCallback, this);
+    sensationSubscriber = node.subscribe("rl/sensation", bufferSize, &RLVechicle::sensationCallback, this);
+}
 
-    const int numactions = 3;
+
+RLVechicle::~RLVechicle(){
+    ros::shutdown();
+}
+
+
+void RLVechicle::simulate()
+{
+    const int numactions = NumActions;
     const unsigned NUMTRIALS = 1;
     float alpha = 0.3;
     float discountfactor = 0.99;
     float initialvalue = 0.0;
     float epsilon = 0.1;
+    float lambda = 0.1;
     int seed = 1;
     Random rng(1 + seed);
 
-    cout << "alpha: " << alpha << endl;
-    cout << "discountfactor: " << discountfactor << endl;
-    cout << "initialvalue: " << initialvalue << endl;
-    cout << "epsilon: " << epsilon << endl;
-
-
     float sumOfRewards = 0;
-    cout << "Agent: QLearner" << endl;
     for (unsigned j = 0; j < NUMTRIALS; ++j) {
         Agent* agent = new QLearner(numactions, discountfactor, initialvalue, alpha, epsilon, rng);
-//        std::vector<experience> seeds;
-//        agent->seedExp( seeds );
-        sumOfRewards += runAlgorithm( agent, actionPublisher );
+//        Agent* agent = new Sarsa(numactions, discountfactor, initialvalue, alpha, epsilon, lambda, rng);
+//        agent->seedExp( getSeedings() );
+        sumOfRewards += runSteps( agent );
         delete agent;
     }
     cout << "Avg(by trials) reward sum: " << (sumOfRewards / (float)NUMTRIALS) << endl;
-
-    ros::shutdown();
-    return 0;
 }
 
 
+vector<experience> RLVechicle::getSeedings( )
+{
+    vector<experience> expContainer;
+    expContainer.push_back( getExperience(Backward) );
+    expContainer.push_back( getExperience(Forward) );
+
+    return expContainer;
+}
 
 
-int runAlgorithm( Agent * agent,  ros::Publisher actionPublisher )
+experience RLVechicle::getExperience( const unsigned action )
+{
+    ros::Rate loop_rate(10);
+
+    experience exp;
+    exp.act = action;
+    exp.s = sensation;
+    std_msgs::Int32 vehicleAction;
+    vehicleAction.data = exp.act;
+    actionPublisher.publish( vehicleAction );
+    exp.reward = reward;
+    exp.terminal = false;
+    loop_rate.sleep();
+    ros::spinOnce();
+    exp.next = sensation;
+
+    vehicleAction.data = Stop;
+    actionPublisher.publish( vehicleAction );
+
+    return exp;
+}
+
+
+int RLVechicle::runSteps( Agent * agent )
 {
     unsigned MAXSTEPS = 1000;
     unsigned NUMEPISODES = 1;
@@ -87,47 +143,44 @@ int runAlgorithm( Agent * agent,  ros::Publisher actionPublisher )
         int steps = 0;
 //    rl_texplore::RLAction vehicleAction;
         std_msgs::Int32 vehicleAction;
-        vehicleAction.data = agent->first_action( std::vector<float>(RLVariables::sensation) );
+        vehicleAction.data = agent->first_action( sensation );
         actionPublisher.publish( vehicleAction );
-        sum += RLVariables::reward;
+        sum += reward;
 
         while ( steps < MAXSTEPS ) {
             // Sleep to work at loop_rate frequency
             loop_rate.sleep();
             ros::spinOnce();
-            vehicleAction.data = agent->next_action( RLVariables::reward, std::vector<float>(RLVariables::sensation) );
+            vehicleAction.data = agent->next_action( reward, sensation );
             actionPublisher.publish( vehicleAction );
-            sum += RLVariables::reward;
+            sum += reward;
             ++steps;
-            if(RLVariables::reward > -0.01){
-                agent->last_action(RLVariables::reward);
-                resetEnvironment( actionPublisher );
+            if(reward > -0.01){
                 break;
             }
         }
-        agent->last_action(RLVariables::reward);
-        resetEnvironment( actionPublisher );
 
-        cout <<"Episode: " << i+1 << endl;
-        cout <<"Sum: " << sum << endl;
+        cout << "Episode: " << i+1 << endl;
+        cout << "Sum: " << sum << endl;
     }
-  return sum;
+    resetEnvironment( );
+    return sum;
 }
 
 
-void resetEnvironment( ros::Publisher actionPublisher )
+void RLVechicle::resetEnvironment( )
 {
     std_msgs::Int32 vehicleAction;
-    vehicleAction.data = 0;
+    vehicleAction.data = Stop;
     actionPublisher.publish( vehicleAction );
 }
 
-void rewardCallback(const std_msgs::Float32::ConstPtr& rewardMsg)
+void RLVechicle::rewardCallback(const std_msgs::Float32::ConstPtr& rewardMsg)
 {
-    RLVariables::reward = rewardMsg->data;
+    reward = rewardMsg->data;
 }
 
-void sensationCallback(const std_msgs::Float32::ConstPtr& sensationMsg)
+void RLVechicle::sensationCallback(const std_msgs::Float32::ConstPtr& sensationMsg)
 {
-    RLVariables::sensation = sensationMsg->data;
+    sensation[0] = sensationMsg->data;
 }
