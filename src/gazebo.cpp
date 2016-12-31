@@ -30,6 +30,7 @@ class RLVechicle{
     vector<experience> getSeedings( );
     experience getExperience( const unsigned action );
 
+    ros::Rate loopRate;
     ros::Publisher actionPublisher;
     ros::Subscriber rewardSubscriber;
     ros::Subscriber sensationSubscriber;
@@ -58,7 +59,7 @@ int main(int argc, char **argv){
 }
 
 
-RLVechicle::RLVechicle( ros::NodeHandle node ): reward(-1){
+RLVechicle::RLVechicle( ros::NodeHandle node ): reward(-1), loopRate(2){
     sensation.resize(1,0);
 
     const unsigned bufferSize = 1;
@@ -109,8 +110,6 @@ vector<experience> RLVechicle::getSeedings( )
 
 experience RLVechicle::getExperience( const unsigned action )
 {
-    ros::Rate loop_rate(10);
-
     experience exp;
     exp.act = action;
     exp.s = sensation;
@@ -119,7 +118,7 @@ experience RLVechicle::getExperience( const unsigned action )
     actionPublisher.publish( vehicleAction );
     exp.reward = reward;
     exp.terminal = false;
-    loop_rate.sleep();
+    loopRate.sleep();
     ros::spinOnce();
     exp.next = sensation;
 
@@ -132,30 +131,29 @@ experience RLVechicle::getExperience( const unsigned action )
 
 int RLVechicle::runSteps( Agent * agent )
 {
-    unsigned MAXSTEPS = 1000;
+    unsigned MAXSTEPS = 2000;
     unsigned NUMEPISODES = 1;
     float sum = 0;
 
-    // ROS loop rate in Hz
-    ros::Rate loop_rate(10);
-
     for (unsigned i = 0; i < NUMEPISODES; ++i) {
-        int steps = 0;
+        int step = 0;
 //    rl_texplore::RLAction vehicleAction;
         std_msgs::Int32 vehicleAction;
         vehicleAction.data = agent->first_action( sensation );
         actionPublisher.publish( vehicleAction );
         sum += reward;
 
-        while ( steps < MAXSTEPS ) {
-            // Sleep to work at loop_rate frequency
-            loop_rate.sleep();
+        while ( step < MAXSTEPS ) {
+            // Sleep to work at loopRate frequency
+            cout << "Step = " << step << endl;
+            loopRate.sleep();
             ros::spinOnce();
             vehicleAction.data = agent->next_action( reward, sensation );
             actionPublisher.publish( vehicleAction );
             sum += reward;
-            ++steps;
-            if(reward > -0.01){
+            ++step;
+            if(reward > -0.02){
+                cout << "Terminal state (setpoint)." << endl;
                 break;
             }
         }
