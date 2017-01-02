@@ -8,9 +8,9 @@
 #include <agents/Sarsa.hh>
 
 #include <ros/ros.h>
-#include <std_msgs/String.h>
 #include <std_msgs/Int32.h>
 #include <std_msgs/Float32.h>
+#include <geometry_msgs/Point32.h>
 
 using namespace std;
 
@@ -22,7 +22,7 @@ class RLVechicle{
 
     void simulate();
     void rewardCallback(const std_msgs::Float32::ConstPtr& rewardMsg);
-    void sensationCallback(const std_msgs::Float32::ConstPtr& sensationMsg);
+    void sensationCallback(const geometry_msgs::Point32::ConstPtr& sensationMsg);
 
     private:
     int runSteps( Agent * agent );
@@ -60,7 +60,7 @@ int main(int argc, char **argv){
 
 
 RLVechicle::RLVechicle( ros::NodeHandle node ): reward(-1), loopRate(2){
-    sensation.resize(1,0);
+    sensation.resize(3,0);
 
     const unsigned bufferSize = 1;
     actionPublisher = node.advertise<std_msgs::Int32>("/rl/action", bufferSize);
@@ -131,7 +131,7 @@ experience RLVechicle::getExperience( const unsigned action )
 
 int RLVechicle::runSteps( Agent * agent )
 {
-    unsigned MAXSTEPS = 1000;
+    unsigned MAXSTEPS = 700;
     unsigned NUMEPISODES = 1;
     float sum = 0;
 
@@ -152,7 +152,7 @@ int RLVechicle::runSteps( Agent * agent )
             actionPublisher.publish( vehicleAction );
             sum += reward;
             ++step;
-            if(reward > - 0.05){ // 0.05 cm error is acceptable
+            if(reward >= - 0.1){
                 cout << "Terminal state (setpoint)." << endl;
                 break;
             }
@@ -178,7 +178,9 @@ void RLVechicle::rewardCallback(const std_msgs::Float32::ConstPtr& rewardMsg)
     reward = rewardMsg->data;
 }
 
-void RLVechicle::sensationCallback(const std_msgs::Float32::ConstPtr& sensationMsg)
+void RLVechicle::sensationCallback(const geometry_msgs::Point32::ConstPtr& sensationMsg)
 {
-    sensation[0] = sensationMsg->data;
+    sensation[0] = sensationMsg->x;
+    sensation[1] = sensationMsg->y;
+    sensation[2] = sensationMsg->z;
 }
