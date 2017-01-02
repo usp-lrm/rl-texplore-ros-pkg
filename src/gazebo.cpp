@@ -65,7 +65,7 @@ RLVechicle::RLVechicle( ros::NodeHandle node ): reward(-1), loopRate(2){
     const unsigned bufferSize = 1;
     actionPublisher = node.advertise<std_msgs::Int32>("/rl/action", bufferSize);
     rewardSubscriber = node.subscribe("/rl/reward", bufferSize, &RLVechicle::rewardCallback, this);
-    sensationSubscriber = node.subscribe("rl/sensation", bufferSize, &RLVechicle::sensationCallback, this);
+    sensationSubscriber = node.subscribe("rl/state", bufferSize, &RLVechicle::sensationCallback, this);
 }
 
 
@@ -131,7 +131,7 @@ experience RLVechicle::getExperience( const unsigned action )
 
 int RLVechicle::runSteps( Agent * agent )
 {
-    unsigned MAXSTEPS = 2000;
+    unsigned MAXSTEPS = 1000;
     unsigned NUMEPISODES = 1;
     float sum = 0;
 
@@ -152,7 +152,7 @@ int RLVechicle::runSteps( Agent * agent )
             actionPublisher.publish( vehicleAction );
             sum += reward;
             ++step;
-            if(reward > -0.02){
+            if(reward > - 0.05){ // 0.05 cm error is acceptable
                 cout << "Terminal state (setpoint)." << endl;
                 break;
             }
