@@ -38,10 +38,7 @@ class RLVechicle{
     float reward;
 
     enum VechicleAction{
-        Backward = 0,
-        Stop = 1,
-        Forward = 2,
-        NumActions = 3
+        NumActions = 10
     };
 };
 
@@ -101,8 +98,8 @@ void RLVechicle::simulate()
 vector<experience> RLVechicle::getSeedings( )
 {
     vector<experience> expContainer;
-    expContainer.push_back( getExperience(Backward) );
-    expContainer.push_back( getExperience(Forward) );
+    expContainer.push_back( getExperience(0) );
+    expContainer.push_back( getExperience(1) );
 
     return expContainer;
 }
@@ -122,7 +119,7 @@ experience RLVechicle::getExperience( const unsigned action )
     ros::spinOnce();
     exp.next = sensation;
 
-    vehicleAction.data = Stop;
+    vehicleAction.data = 9;
     actionPublisher.publish( vehicleAction );
 
     return exp;
@@ -131,7 +128,7 @@ experience RLVechicle::getExperience( const unsigned action )
 
 int RLVechicle::runSteps( Agent * agent )
 {
-    unsigned MAXSTEPS = 700;
+    unsigned MAXSTEPS = 1000;
     unsigned NUMEPISODES = 1;
     float sum = 0;
 
@@ -169,7 +166,7 @@ int RLVechicle::runSteps( Agent * agent )
 void RLVechicle::resetEnvironment( )
 {
     std_msgs::Int32 vehicleAction;
-    vehicleAction.data = Stop;
+    vehicleAction.data = 9;
     actionPublisher.publish( vehicleAction );
 }
 
