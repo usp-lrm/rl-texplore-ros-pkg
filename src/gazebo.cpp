@@ -15,14 +15,16 @@
 using namespace std;
 
 
-class RLVechicle{
+class RLVehicle{
     public:
-    RLVechicle( ros::NodeHandle );
-    ~RLVechicle();
+    RLVehicle( ros::NodeHandle );
+    ~RLVehicle();
 
     void simulate();
     void rewardCallback(const std_msgs::Float32::ConstPtr& rewardMsg);
-    void sensationCallback(const geometry_msgs::Point32::ConstPtr& sensationMsg);
+    void positionCallback(const geometry_msgs::Point32::ConstPtr& positionMsg);
+    void velocityCallback(const std_msgs::Int32::ConstPtr& velocityMsg);
+    void steeringCallback(const std_msgs::Int32::ConstPtr& steeringMsg);
 
     private:
     int runSteps( Agent * agent );
@@ -33,12 +35,12 @@ class RLVechicle{
     ros::Rate loopRate;
     ros::Publisher actionPublisher;
     ros::Subscriber rewardSubscriber;
-    ros::Subscriber sensationSubscriber;
-    vector<float> sensation;
+    ros::Subscriber positionSubscriber, velocitySubscriber, steeringSubscriber;
+    vector<float> stateObservation;
     float reward;
 
     enum VechicleAction{
-        NumActions = 10
+        NumActions = 5
     };
 };
 
@@ -49,29 +51,31 @@ int main(int argc, char **argv){
     ros::init(argc, argv, "RLAgent");
     ros::NodeHandle node;
 
-    RLVechicle roverSim( node );
+    RLVehicle roverSim( node );
     roverSim.simulate();
 
     return 0;
 }
 
 
-RLVechicle::RLVechicle( ros::NodeHandle node ): reward(-1), loopRate(2){
-    sensation.resize(3,0);
+RLVehicle::RLVehicle( ros::NodeHandle node ): reward(-1), loopRate(2){
+    stateObservation.resize(5,0);
 
     const unsigned bufferSize = 1;
     actionPublisher = node.advertise<std_msgs::Int32>("/rl/action", bufferSize);
-    rewardSubscriber = node.subscribe("/rl/reward", bufferSize, &RLVechicle::rewardCallback, this);
-    sensationSubscriber = node.subscribe("rl/state", bufferSize, &RLVechicle::sensationCallback, this);
+    rewardSubscriber = node.subscribe("/rl/reward", bufferSize, &RLVehicle::rewardCallback, this);
+    positionSubscriber = node.subscribe("/rl/state/position", bufferSize, &RLVehicle::positionCallback, this);
+    velocitySubscriber = node.subscribe("/rl/state/velocity", bufferSize, &RLVehicle::velocityCallback, this);
+    steeringSubscriber = node.subscribe("/rl/state/steering", bufferSize, &RLVehicle::steeringCallback, this);
 }
 
 
-RLVechicle::~RLVechicle(){
+RLVehicle::~RLVehicle(){
     ros::shutdown();
 }
 
 
-void RLVechicle::simulate()
+void RLVehicle::simulate()
 {
     const int numactions = NumActions;
     const unsigned NUMTRIALS = 1;
@@ -95,7 +99,7 @@ void RLVechicle::simulate()
 }
 
 
-vector<experience> RLVechicle::getSeedings( )
+vector<experience> RLVehicle::getSeedings( )
 {
     vector<experience> expContainer;
     expContainer.push_back( getExperience(0) );
@@ -105,11 +109,11 @@ vector<experience> RLVechicle::getSeedings( )
 }
 
 
-experience RLVechicle::getExperience( const unsigned action )
+experience RLVehicle::getExperience( const unsigned action )
 {
     experience exp;
     exp.act = action;
-    exp.s = sensation;
+    exp.s = stateObservation;
     std_msgs::Int32 vehicleAction;
     vehicleAction.data = exp.act;
     actionPublisher.publish( vehicleAction );
@@ -117,7 +121,7 @@ experience RLVechicle::getExperience( const unsigned action )
     exp.terminal = false;
     loopRate.sleep();
     ros::spinOnce();
-    exp.next = sensation;
+    exp.next = stateObservation;
 
     vehicleAction.data = 9;
     actionPublisher.publish( vehicleAction );
@@ -126,7 +130,7 @@ experience RLVechicle::getExperience( const unsigned action )
 }
 
 
-int RLVechicle::runSteps( Agent * agent )
+int RLVehicle::runSteps( Agent * agent )
 {
     unsigned MAXSTEPS = 1000;
     unsigned NUMEPISODES = 1;
@@ -136,7 +140,7 @@ int RLVechicle::runSteps( Agent * agent )
         int step = 0;
 //    rl_texplore::RLAction vehicleAction;
         std_msgs::Int32 vehicleAction;
-        vehicleAction.data = agent->first_action( sensation );
+        vehicleAction.data = agent->first_action( stateObservation );
         actionPublisher.publish( vehicleAction );
         sum += reward;
 
@@ -145,7 +149,7 @@ int RLVechicle::runSteps( Agent * agent )
             cout << "Step = " << step << endl;
             loopRate.sleep();
             ros::spinOnce();
-            vehicleAction.data = agent->next_action( reward, sensation );
+            vehicleAction.data = agent->next_action( reward, stateObservation );
             actionPublisher.publish( vehicleAction );
             sum += reward;
             ++step;
@@ -163,21 +167,31 @@ int RLVechicle::runSteps( Agent * agent )
 }
 
 
-void RLVechicle::resetEnvironment( )
+void RLVehicle::resetEnvironment( )
 {
     std_msgs::Int32 vehicleAction;
-    vehicleAction.data = 9;
+    vehicleAction.data = 0;
     actionPublisher.publish( vehicleAction );
 }
 
-void RLVechicle::rewardCallback(const std_msgs::Float32::ConstPtr& rewardMsg)
+void RLVehicle::rewardCallback(const std_msgs::Float32::ConstPtr& rewardMsg)
 {
     reward = rewardMsg->data;
 }
 
-void RLVechicle::sensationCallback(const geometry_msgs::Point32::ConstPtr& sensationMsg)
+void RLVehicle::positionCallback(const geometry_msgs::Point32::ConstPtr& positionMsg)
 {
-    sensation[0] = sensationMsg->x;
-    sensation[1] = sensationMsg->y;
-    sensation[2] = sensationMsg->z;
+    stateObservation[0] = static_cast<int>( positionMsg->x );
+    stateObservation[1] = static_cast<int>( positionMsg->y );
+    stateObservation[2] = static_cast<int>( positionMsg->z );
+}
+
+void RLVehicle::velocityCallback(const std_msgs::Int32::ConstPtr& velocityMsg)
+{
+    stateObservation[3] = velocityMsg->data;
+}
+
+void RLVehicle::steeringCallback(const std_msgs::Int32::ConstPtr& steeringMsg)
+{
+    stateObservation[4] = steeringMsg->data;
 }
