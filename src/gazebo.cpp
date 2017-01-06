@@ -11,6 +11,7 @@
 #include <std_msgs/Int32.h>
 #include <std_msgs/Float32.h>
 #include <geometry_msgs/Point32.h>
+#include <geometry_msgs/Quaternion.h>
 
 using namespace std;
 
@@ -23,6 +24,7 @@ class RLVehicle{
     void simulate();
     void rewardCallback(const std_msgs::Float32::ConstPtr& rewardMsg);
     void positionCallback(const geometry_msgs::Point32::ConstPtr& positionMsg);
+    void orientationCallback(const geometry_msgs::Quaternion::ConstPtr& orientationMsg);
     void velocityCallback(const std_msgs::Int32::ConstPtr& velocityMsg);
     void steeringCallback(const std_msgs::Int32::ConstPtr& steeringMsg);
 
@@ -35,7 +37,8 @@ class RLVehicle{
     ros::Rate loopRate;
     ros::Publisher actionPublisher;
     ros::Subscriber rewardSubscriber;
-    ros::Subscriber positionSubscriber, velocitySubscriber, steeringSubscriber;
+    ros::Subscriber positionSubscriber, orientationSubscriber;
+    ros::Subscriber velocitySubscriber, steeringSubscriber;
     vector<float> stateObservation;
     vector<float> oldObservation;
     float reward;
@@ -60,13 +63,14 @@ int main(int argc, char **argv){
 
 
 RLVehicle::RLVehicle( ros::NodeHandle node ): reward(-1), loopRate(2){
-    stateObservation.resize(5,0);
-    oldObservation.resize(5,0);
+    stateObservation.resize(9,0);
+    oldObservation.resize(9,0);
 
     const unsigned bufferSize = 1;
     actionPublisher = node.advertise<std_msgs::Int32>("/rl/action", bufferSize);
     rewardSubscriber = node.subscribe("/rl/reward", bufferSize, &RLVehicle::rewardCallback, this);
     positionSubscriber = node.subscribe("/rl/state/position", bufferSize, &RLVehicle::positionCallback, this);
+    orientationSubscriber = node.subscribe("/rl/state/orientation", bufferSize, &RLVehicle::orientationCallback, this);
     velocitySubscriber = node.subscribe("/rl/state/velocity", bufferSize, &RLVehicle::velocityCallback, this);
     steeringSubscriber = node.subscribe("/rl/state/steering", bufferSize, &RLVehicle::steeringCallback, this);
 }
@@ -125,7 +129,7 @@ experience RLVehicle::getExperience( const unsigned action )
     ros::spinOnce();
     exp.next = stateObservation;
 
-    vehicleAction.data = 9;
+    vehicleAction.data = 0;
     actionPublisher.publish( vehicleAction );
 
     return exp;
@@ -190,12 +194,20 @@ void RLVehicle::positionCallback(const geometry_msgs::Point32::ConstPtr& positio
     stateObservation[2] = static_cast<int>( positionMsg->z );
 }
 
+void RLVehicle::orientationCallback(const geometry_msgs::Quaternion::ConstPtr& orientationMsg)
+{
+    stateObservation[3] = static_cast<int>( orientationMsg->w );
+    stateObservation[4] = static_cast<int>( orientationMsg->x );
+    stateObservation[5] = static_cast<int>( orientationMsg->y );
+    stateObservation[6] = static_cast<int>( orientationMsg->z );
+}
+
 void RLVehicle::velocityCallback(const std_msgs::Int32::ConstPtr& velocityMsg)
 {
-    stateObservation[3] = velocityMsg->data;
+    stateObservation[7] = velocityMsg->data;
 }
 
 void RLVehicle::steeringCallback(const std_msgs::Int32::ConstPtr& steeringMsg)
 {
-    stateObservation[4] = steeringMsg->data;
+    stateObservation[8] = steeringMsg->data;
 }
