@@ -37,6 +37,7 @@ class RLVehicle{
     ros::Subscriber rewardSubscriber;
     ros::Subscriber positionSubscriber, velocitySubscriber, steeringSubscriber;
     vector<float> stateObservation;
+    vector<float> oldObservation;
     float reward;
 
     enum VechicleAction{
@@ -60,6 +61,7 @@ int main(int argc, char **argv){
 
 RLVehicle::RLVehicle( ros::NodeHandle node ): reward(-1), loopRate(2){
     stateObservation.resize(5,0);
+    oldObservation.resize(5,0);
 
     const unsigned bufferSize = 1;
     actionPublisher = node.advertise<std_msgs::Int32>("/rl/action", bufferSize);
@@ -140,8 +142,9 @@ int RLVehicle::runSteps( Agent * agent )
         int step = 0;
 //    rl_texplore::RLAction vehicleAction;
         std_msgs::Int32 vehicleAction;
-        vehicleAction.data = agent->first_action( stateObservation );
+        vehicleAction.data = agent->first_action( oldObservation );
         actionPublisher.publish( vehicleAction );
+        oldObservation = stateObservation;
         sum += reward;
 
         while ( step < MAXSTEPS ) {
@@ -149,8 +152,9 @@ int RLVehicle::runSteps( Agent * agent )
             cout << "Step = " << step << endl;
             loopRate.sleep();
             ros::spinOnce();
-            vehicleAction.data = agent->next_action( reward, stateObservation );
+            vehicleAction.data = agent->next_action( reward, oldObservation );
             actionPublisher.publish( vehicleAction );
+            oldObservation = stateObservation;
             sum += reward;
             ++step;
             if(reward >= - 0.1){
